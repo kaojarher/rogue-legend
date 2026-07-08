@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rogue Legend - 六大部位與神寵協戰 (圖資精準對應版)</title>
+    <title>Rogue Legend - 六大部位與神寵協戰 (圖資優化版)</title>
     <style>
         :root {
             --bg: #0d0d11;
@@ -16,10 +16,6 @@
             --orange: #fa8231;
             --text: #ffffff;
             --gray: #888899;
-            
-            /* 精靈圖每格基本尺寸 (基於1024x512大圖標準化) */
-            --grid-w: 128px;
-            --grid-h: 128px;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, system-ui, sans-serif; }
@@ -40,22 +36,12 @@
 
         /* 👑 全身配備配置網格 */
         .equip-slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-        .slot-card { background: #1a1a26; border: 1px solid #32324a; border-radius: 10px; padding: 6px; text-align: left; position: relative; min-height: 65px; display: flex; flex-direction: column; justify-content: space-between;}
+        .slot-card { background: #1a1a26; border: 1px solid #32324a; border-radius: 10px; padding: 6px; text-align: left; position: relative; min-height: 58px;}
         .slot-card.has-item { border-color: var(--orange); background: #1c1524; }
         .slot-card.is-pet { border-color: var(--purple); background: #151e24; }
         
-        /* 🎮 內嵌精靈圖外框 */
-        .sprite-icon {
-            width: 36px;
-            height: 36px;
-            background-size: 800% 600%; /* 對應 8x6 網格大圖 */
-            background-repeat: no-repeat;
-            border-radius: 6px;
-            margin-bottom: 2px;
-        }
-        
         /* 庫房背包網格 */
-        .inventory-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; max-height: 140px; overflow-y: auto; background: #0b0b10; padding: 6px; border-radius: 12px; border: 1px solid #232330; }
+        .inventory-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; max-height: 120px; overflow-y: auto; background: #0b0b10; padding: 6px; border-radius: 12px; border: 1px solid #232330; }
         .inv-item { background: #1e1e2e; border: 1px solid #444; border-radius: 8px; padding: 6px; text-align: left; font-size: 0.7rem; display: flex; flex-direction: column; justify-content: space-between; }
         
         .rarity-0 { border-color: var(--gray); color: #ccc; }       
@@ -72,48 +58,16 @@
         .lobby-skill-dot { background: #1a1a26; border: 1px solid #2d2d3d; border-radius: 8px; padding: 4px 0; font-size: 0.65rem; }
         .lobby-skill-dot.active { border-color: var(--purple); background: #261a3a; }
 
-        /* 局內地圖 */
+        /* 局內 */
         .board-view { background: #0a0a0f; padding: 12px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; text-align: center; }
-        .tile { 
-            background: #222230; 
-            border-radius: 8px; 
-            height: 45px; 
-            border: 2px solid transparent; 
-            background-size: 800% 600%;
-            background-repeat: no-repeat;
-            position: relative;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
-        }
-        .tile::after {
-            content: '⚔️';
-            position: absolute;
-            bottom: 2px; right: 2px;
-            font-size: 0.6rem;
-            background: rgba(0,0,0,0.6);
-            padding: 1px 3px;
-            border-radius: 4px;
-        }
-        .tile.is-boss::after { content: '👑'; }
-        .tile.active { border-color: var(--primary); transform: scale(1.05); box-shadow: 0 0 10px var(--primary); }
+        .tile { background: #222230; border-radius: 8px; padding: 8px 0; font-size: 1.1rem; border: 2px solid transparent; }
+        .tile.active { border-color: var(--primary); background: #3d1f24; transform: scale(1.05); }
 
         .adventure-stage { padding: 10px 15px; text-align: center; }
         .battle-pair { display: flex; justify-content: space-between; align-items: center; width: 100%; margin: 5px 0; }
         .entity { width: 32%; text-align: center; display: flex; flex-direction: column; align-items: center; }
-        
-        /* 戰鬥大頭照 */
-        .avatar-frame { 
-            width: 64px; 
-            height: 64px; 
-            border-radius: 12px; 
-            background: #222233; 
-            border: 2px solid #444; 
-            position: relative; 
-            background-size: 800% 600%;
-            background-repeat: no-repeat;
-        }
-        .avatar-frame.hero { background-image: none; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; }
-
-        .shield-badge { position: absolute; top: -5px; right: -5px; background: var(--info); color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 0.65rem; display: flex; justify-content: center; align-items: center; border: 1px solid #fff; font-weight: bold; z-index: 5;}
+        .avatar { width: 56px; height: 56px; position: relative; display: flex; justify-content: center; align-items: center; border-radius: 12px; background: #1a1a26; overflow: visible;}
+        .shield-badge { position: absolute; top: -5px; right: -5px; background: var(--info); color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 0.65rem; display: flex; justify-content: center; align-items: center; border: 1px solid #fff; font-weight: bold; z-index: 10;}
         .hp-bar { background: #32324a; height: 8px; border-radius: 4px; margin: 4px 0; overflow: hidden; width: 100%; }
         .hp-inner { background: var(--success); height: 100%; width: 100%; transition: width 0.2s; }
         .status-effect { font-size: 0.7rem; font-weight: bold; height: 16px; }
@@ -125,7 +79,7 @@
         .skill-slot .cd-num { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.7); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; font-weight: bold; color: var(--primary); border-radius: 10px;}
 
         .passive-panel { display: flex; justify-content: center; gap: 10px; font-size: 0.7rem; color: #aaa; margin-bottom: 4px; }
-        .logs { height: 90px; background: #060609; padding: 8px 12px; overflow-y: auto; font-size: 0.75rem; color: #b3b3cc; border-top: 1px solid #232330; line-height: 1.4; text-align: left;}
+        .logs { height: 90px; background: #060609; padding: 8px 12px; overflow-y: auto; font-size: 0.75rem; color: #b3b3cc; border-top: 1px solid #232330; line-height: 1.4; }
 
         .footer-actions { padding: 12px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
         button { background: #2d2d3d; color: white; border: none; padding: 10px; font-weight: bold; border-radius: 12px; cursor: pointer; }
@@ -137,6 +91,47 @@
         .overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; z-index: 100; }
         .choice-container { background: #1f1f2e; border-radius: 20px; padding: 20px; width: 85%; max-width: 400px; text-align: center; border: 1px solid #32324a; }
         .upgrade-card { background: #2a2a3a; border: 2px solid #444; border-radius: 12px; padding: 10px; margin-top: 10px; cursor: pointer; text-align: left; }
+
+        /* ========================================================
+           🖼️ 全新精靈圖切圖與映射系統 (2D Sprite Mapping System)
+           ======================================================== */
+        .game-sprite {
+            display: inline-block;
+            width: 100%;
+            height: 100%;
+            background-repeat: no-repeat;
+            background-size: 700% 700%; /* 依 7x7 網格比例滿版縮放 */
+            image-rendering: pixelated; /* 保持像素風格清晰度 */
+        }
+        
+        /* 圖資分流 */
+        .spr-asset { background-image: url('assets.jpg'); }
+        .spr-monster { background-image: url('monsters.jpg'); }
+
+        /* 裝備網格 (assets.jpg 座標對照) */
+        .spr-weapon { background-position: 0% 0%; }         /* A1 */
+        .spr-armor  { background-position: 33.33% 16.66%; }  /* C2 */
+        .spr-helmet { background-position: 0% 16.66%; }     /* A2 */
+        .spr-ring   { background-position: 16.66% 33.33%; }  /* B3 */
+        .spr-amulet { background-position: 33.33% 33.33%; }  /* C3 */
+        .spr-boots  { background-position: 66.66% 33.33%; }  /* E3 */
+        .spr-potion { background-position: 0% 50%; }         /* A4 */
+
+        /* 戰鬥神寵 (assets.jpg 座標對照) */
+        .spr-pet-dragon { background-position: 0% 83.33%; }    /* A6: 小火龍 */
+        .spr-pet-dog    { background-position: 16.66% 83.33%; }/* B6: 機械狗 */
+        .spr-pet-slime  { background-position: 33.33% 83.33%; }/* C6: 史萊姆 */
+        .spr-egg        { background-position: 66.66% 66.66%; }/* E5: 寵物蛋代用 */
+
+        /* 怪物網格 (monsters.jpg 座標對照) */
+        .spr-m-wolf    { background-position: 0% 16.66%; }    /* A2: 草原狼人 */
+        .spr-m-goblin  { background-position: 16.66% 16.66%; }/* B2: 雙頭奇美拉(以哥布林代) */
+        .spr-m-boss    { background-position: 0% 50%; }       /* E1: 滅世魔皇(親衛隊長) */
+        .spr-m-unknown { background-position: 66.66% 0%; }    /* A7: 未知瞄準鏡 */
+
+        /* 大廳裝備展示區專用排版微調 */
+        .slot-layout { display: flex; align-items: center; gap: 6px; width: 100%; height: 100%; }
+        .slot-img-box { width: 32px; height: 32px; flex-shrink: 0; }
     </style>
 </head>
 <body>
@@ -178,7 +173,7 @@
             </div>
 
             <div class="panel-title">⚡ 永久基礎特技修煉</div>
-            <div class="slot-card" style="display:flex; justify-content: space-around; text-align:center; padding: 4px; min-height: auto; flex-direction: row;">
+            <div class="slot-card" style="display:flex; justify-content: space-around; text-align:center; padding: 4px; min-height: auto;">
                 <div>🎯 暴擊率: <strong style="color:var(--primary)" id="lb-crit">15%</strong></div>
                 <div>⚡ 連擊率: <strong style="color:var(--info)" id="lb-double">15%</strong></div>
             </div>
@@ -203,17 +198,19 @@
 
             <div class="battle-pair">
                 <div class="entity">
-                    <div class="avatar-frame hero">🤠<div class="shield-badge" id="hero-shield" style="display:none;">0</div></div>
+                    <div class="avatar" style="background:#222235; border:1px solid #444;">
+                        <span class="game-sprite spr-asset" style="background-position:66.66% 0%;"></span><div class="shield-badge" id="hero-shield" style="display:none;">0</div>
+                    </div>
                     <div id="hero-status" class="status-effect" style="color:var(--success)">玩家</div>
                     <div class="hp-bar"><div id="hero-hp-bar" class="hp-inner"></div></div>
                     <div id="hero-hp-txt" style="font-size:0.75rem">0/0</div>
                 </div>
-                <div class="entity" id="run-pet-node" style="width: 20%; opacity:0.3;">
-                    <div class="avatar-frame" id="run-pet-avatar"></div>
+                <div class="entity" id="run-pet-node" style="width: 22%; opacity:0.3;">
+                    <div class="avatar" id="run-pet-avatar"></div>
                     <div style="font-size:0.65rem; color:var(--purple); font-weight:bold; margin-top:2px;" id="run-pet-name">無寵物</div>
                 </div>
                 <div class="entity" id="enemy-node" style="opacity:0.2;">
-                    <div class="avatar-frame" id="enemy-avatar"></div>
+                    <div class="avatar" id="enemy-avatar"></div>
                     <div id="enemy-status" class="status-effect" style="color:var(--orange)"></div>
                     <div class="hp-bar"><div id="enemy-hp-bar" class="hp-inner"></div></div>
                     <div id="enemy-hp-txt" style="font-size:0.75rem">0/0</div>
@@ -257,38 +254,20 @@
 </div>
 
 <script>
-    // 圖片資產路徑定義
-    const ASSETS = {
-        monsters: 'monsters.jpg',
-        assets: 'assets.jpg',
-        env: 'env.jpg'
-    };
-
-    // 網格座標對應函數 (A-H = 0-7, 1-7 = 0-6)
-    function getGridPos(coord) {
-        const colMap = { 'A':0, 'B':1, 'C':2, 'D':3, 'E':4, 'F':5, 'G':6, 'H':7 };
-        const col = colMap[coord.charAt(0)];
-        const row = parseInt(coord.slice(1)) - 1;
-        // 計算百分比背景偏移量值 (基於 8x6 網格：(col / (8-1))*100 )
-        const posX = (col / 7) * 100;
-        const posY = (row / 5) * 100;
-        return `${posX}% ${posY}%`;
-    }
-
     const SLOT_DEFS = {
-        weapon: { icon: "⚔️", name: "武器", statName: "攻擊力", unit: "", grid: "A1" },
-        armor:  { icon: "🛡️", name: "胸甲", statName: "最大生命", unit: "", grid: "C2" },
-        helmet: { icon: "🪖", name: "頭盔", statName: "最大生命", unit: "", grid: "A2" },
-        ring:   { icon: "💍", name: "戒指", statName: "暴擊率", unit: "%", grid: "B3" },
-        amulet: { icon: "📿", name: "項鍊", statName: "連擊率", unit: "%", grid: "C3" },
-        boots:  { icon: "🥾", name: "戰靴", statName: "初始藥水", unit: "瓶", grid: "E3" },
-        pet:    { icon: "🐾", name: "戰鬥神寵", statName: "協戰特技", unit: "", grid: "A6" }
+        weapon: { icon: "spr-weapon", name: "武器", statName: "攻擊力", unit: "" },
+        armor:  { icon: "spr-armor",  name: "胸甲", statName: "最大生命", unit: "" },
+        helmet: { icon: "spr-helmet", name: "頭盔", statName: "最大生命", unit: "" },
+        ring:   { icon: "spr-ring",   name: "戒指", statName: "暴擊率", unit: "%" },
+        amulet: { icon: "spr-amulet", name: "項鍊", statName: "連擊率", unit: "%" },
+        boots:  { icon: "spr-boots",  name: "戰靴", statName: "初始藥水", unit: "瓶" },
+        pet:    { icon: "spr-egg",    name: "戰鬥神寵", statName: "協戰特技", unit: "" }
     };
 
     const PET_POOL = [
-        { name: "小火龍", rarity: 2, desc: "回合結束時 50% 機率噴火轟炸 15 點傷害", grid: "A6" },
-        { name: "機械狗", rarity: 1, desc: "開局直接賦予主人 20% 最大生命值的科技護盾", grid: "B6" },
-        { name: "史萊姆", rarity: 0, desc: "主人普攻時 30% 機率幫主人治療 8 點生命", grid: "C6" }
+        { name: "小火龍", sprite: "spr-pet-dragon", rarity: 2, desc: "回合結束時 50% 機率噴火轟炸 15 點傷害" },
+        { name: "機械狗", sprite: "spr-pet-dog", rarity: 1, desc: "開局直接賦予主人 20% 最大生命值的科技護盾" },
+        { name: "史萊姆", sprite: "spr-pet-slime", rarity: 0, desc: "主人普攻時 30% 機率幫主人治療 8 點生命" }
     ];
 
     const RARITY_NAMES = ["普通", "魔法", "史詩"];
@@ -312,16 +291,11 @@
         goldEarned: 0, currentTile: -1, boardLayout: []
     };
 
-    // 怪物資產圖資對應
     const monsters = [
-        { name: "草原史萊姆", hp: 40, dmg: 6, gold: 25, grid: "B1", type: "monsters" },
-        { name: "草原狼", hp: 55, dmg: 9, gold: 45, grid: "A2", type: "monsters" },
-        { name: "哥布林戰士", hp: 75, dmg: 12, gold: 65, grid: "B2", type: "monsters" },
-        { name: "動く鎧 (Boss)", hp: 220, dmg: 24, gold: 350, grid: "E1", type: "monsters" }
+        { name: "荒野狼人", sprite: "spr-m-wolf", hp: 40, dmg: 8, gold: 35 },
+        { name: "雙頭奇美拉", sprite: "spr-m-goblin", hp: 75, dmg: 13, gold: 65 },
+        { name: "滅世魔皇 (Boss)", sprite: "spr-m-boss", hp: 200, dmg: 22, gold: 350 }
     ];
-
-    // 環境地圖切片定義
-    const envTiles = ["B1", "B1", "B1", "C1", "C1", "B2", "B2", "B3", "B3", "D1"];
 
     function generateLoot() {
         const parts = Object.keys(SLOT_DEFS);
@@ -335,15 +309,14 @@
             return {
                 id: Date.now() + Math.random().toString(36).substr(2, 4),
                 type: "pet", rarity: rarity, identified: false,
-                name: "未孵化神祕寵物蛋 🥚", grid: "E5", typeAsset: "assets",
-                desc: "鑑定後可孵化出強力協戰寵物", identifyCost: 60, sellValue: 40
+                name: "神秘寵物蛋 🥚", sprite: "spr-egg", desc: "鑑定後可孵化出強力協戰寵物",
+                identifyCost: 60, sellValue: 40
             };
         }
 
         return {
             id: Date.now() + Math.random().toString(36).substr(2, 4),
             type: randType, rarity: rarity, identified: false, stat: 0,
-            grid: SLOT_DEFS[randType].grid, typeAsset: "assets",
             identifyCost: (rarity + 1) * 35, sellValue: (rarity + 1) * 20
         };
     }
@@ -359,9 +332,9 @@
         if (item.type === "pet") {
             let pData = PET_POOL[Math.floor(Math.random() * PET_POOL.length)];
             item.name = pData.name;
+            item.sprite = pData.sprite;
             item.rarity = pData.rarity;
             item.desc = pData.desc;
-            item.grid = pData.grid;
         } else {
             let roll = Math.floor(Math.random() * 10) + 5; 
             let mult = item.rarity + 1;
@@ -419,6 +392,7 @@
         document.getElementById('lb-crit').innerText = `${lobby.passives.critChance}%`;
         document.getElementById('lb-double').innerText = `${lobby.passives.doubleChance}%`;
 
+        // 渲染大廳全身配備區
         Object.keys(SLOT_DEFS).forEach(slotKey => {
             const def = SLOT_DEFS[slotKey];
             const item = lobby.equipped[slotKey];
@@ -429,24 +403,36 @@
                 node.className = `slot-card has-item rarity-${item.rarity} ${slotKey === 'pet' ? 'is-pet' : ''}`;
                 if (slotKey === "pet") {
                     node.innerHTML = `
-                        <div class="sprite-icon" style="background-image: url('${ASSETS.assets}'); background-position: ${getGridPos(item.grid)}; border: 1px solid var(--purple);"></div>
-                        <div style="font-size:0.65rem; font-weight:bold;">${item.name}</div>
+                        <div class="slot-layout">
+                            <div class="slot-img-box"><span class="game-sprite spr-asset ${item.sprite}"></span></div>
+                            <div style="overflow:hidden;">
+                                <small style="color:#b975ff; font-size:0.55rem;">🐾 隨行中</small>
+                                <div style="font-size:0.7rem; font-weight:bold; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">${item.name}</div>
+                            </div>
+                        </div>
                     `;
                 } else {
                     node.innerHTML = `
-                        <div class="sprite-icon" style="background-image: url('${ASSETS.assets}'); background-position: ${getGridPos(item.grid)};"></div>
-                        <div style="font-size:0.6rem; color:var(--success)">+${item.stat}${def.unit}</div>
+                        <div class="slot-layout">
+                            <div class="slot-img-box"><span class="game-sprite spr-asset ${def.icon}"></span></div>
+                            <div style="overflow:hidden;">
+                                <small style="color:cyan; font-size:0.55rem;">已裝備</small>
+                                <div style="font-size:0.65rem; font-weight:bold; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">${def.name}</div>
+                                <div style="font-size:0.6rem; color:var(--success)">+${item.stat}${def.unit}</div>
+                            </div>
+                        </div>
                     `;
                 }
             } else {
                 node.className = "slot-card";
                 node.innerHTML = `
-                    <small style="color:var(--gray); font-size:0.6rem;">${def.icon}${def.name}</small>
-                    <div style="font-size:0.65rem; color:#555;">空</div>
+                    <small style="color:var(--gray); font-size:0.6rem;">${def.name}欄</small>
+                    <div style="font-size:0.65rem; color:#444; margin-top:4px;">未裝備</div>
                 `;
             }
         });
 
+        // 渲染背包倉庫
         const box = document.getElementById('inventory-box'); box.innerHTML = '';
         if(lobby.inventory.length === 0) {
             box.innerHTML = `<div style="grid-column:span 2; color:#555; font-size:0.75rem; padding:10px;">倉庫無空閒戰利品與寵物蛋。</div>`;
@@ -455,39 +441,36 @@
                 let def = SLOT_DEFS[item.type];
                 let div = document.createElement('div');
                 div.className = `inv-item rarity-${item.rarity}`;
-                
-                let imgGrid = item.identified ? item.grid : "E5"; 
-                
                 if(!item.identified) {
                     div.innerHTML = `
                         <div style="display:flex; gap:6px; align-items:center;">
-                            <div class="sprite-icon" style="background-image: url('${ASSETS.assets}'); background-position: ${getGridPos(imgGrid)};"></div>
-                            <div><strong>未鑑定</strong><br><span style="color:var(--gold); font-size:0.6rem;">💰${item.identifyCost}</span></div>
+                            <div style="width:24px; height:24px; background:#111; border-radius:4px;"><span class="game-sprite spr-asset spr-egg"></span></div>
+                            <div><strong>未鑑定物品</strong><br><span style="color:var(--gold); font-size:0.6rem;">鑑定: 💰${item.identifyCost}</span></div>
                         </div>
                         <div class="inv-actions">
                             <button class="inv-btn btn-id" onclick="identifyItem('${item.id}')">鑑定</button>
-                            <button class="inv-btn btn-sl" onclick="sellItem('${item.id}')">出售</button>
+                            <button class="inv-btn btn-sl" onclick="sellItem('${item.id}')">💰${item.sellValue}</button>
                         </div>`;
                 } else {
                     if (item.type === "pet") {
                         div.innerHTML = `
                             <div style="display:flex; gap:6px; align-items:center;">
-                                <div class="sprite-icon" style="background-image: url('${ASSETS.assets}'); background-position: ${getGridPos(item.grid)};"></div>
-                                <div><strong>${item.name}</strong></div>
+                                <div style="width:28px; height:28px; flex-shrink:0;"><span class="game-sprite spr-asset ${item.sprite}"></span></div>
+                                <div style="overflow:hidden;"><strong style="font-size:0.65rem;">${item.name}</strong><br><span style="color:var(--purple); font-size:0.55rem; display:block; text-overflow:ellipsis; white-space:nowrap; overflow:hidden;">${item.desc}</span></div>
                             </div>
                             <div class="inv-actions">
                                 <button class="inv-btn btn-eq" onclick="equipItem('${item.id}')">出戰</button>
-                                <button class="inv-btn btn-sl" onclick="sellItem('${item.id}')">出售</button>
+                                <button class="inv-btn btn-sl" onclick="sellItem('${item.id}')">💰${item.sellValue}</button>
                             </div>`;
                     } else {
                         div.innerHTML = `
                             <div style="display:flex; gap:6px; align-items:center;">
-                                <div class="sprite-icon" style="background-image: url('${ASSETS.assets}'); background-position: ${getGridPos(item.grid)};"></div>
-                                <div><strong>${def.name}</strong><br><span style="color:var(--success); font-weight:bold;">+${item.stat}</span></div>
+                                <div style="width:28px; height:28px; flex-shrink:0;"><span class="game-sprite spr-asset ${def.icon}"></span></div>
+                                <div><strong style="font-size:0.65rem;">[${RARITY_NAMES[item.rarity]}]${def.name}</strong><br><span style="color:var(--success); font-weight:bold; font-size:0.6rem;">+${item.stat}${def.unit}</span></div>
                             </div>
                             <div class="inv-actions">
-                                <button class="inv-btn btn-eq" onclick="equipItem('${item.id}')">裝備</button>
-                                <button class="inv-btn btn-sl" onclick="sellItem('${item.id}')">出售</button>
+                                <button class="inv-btn btn-eq" onclick="equipItem('${item.id}')">裝裝</button>
+                                <button class="inv-btn btn-sl" onclick="sellItem('${item.id}')">💰${item.sellValue}</button>
                             </div>`;
                     }
                 }
@@ -522,19 +505,14 @@
             hero: { hp: finalHp, maxHp: finalHp, dmg: finalAtk, pots: 3 + potBonus, shield: startShield },
             pet: petData,
             enemy: null, enemyEffects: { burnTurns: 0, burnDmg: 0, frozenTurns: 0 }, goldEarned: 0, currentTile: -1,
-            boardLayout: envTiles.map((gridCode, idx) => ({ grid: gridCode, isBoss: idx === 9 })),
+            boardLayout: Array.from({length: 9}, () => ({ icon: '⚔️' })),
             runCrit: lobby.passives.critChance + critBonus,
             runDouble: lobby.passives.doubleChance + doubleBonus
         };
+        run.boardLayout.push({ icon: '👑' });
 
         const mapBox = document.getElementById('board-map'); mapBox.innerHTML = '';
-        run.boardLayout.forEach((tile) => {
-            let tileDiv = document.createElement('div');
-            tileDiv.className = `tile ${tile.isBoss ? 'is-boss' : ''}`;
-            tileDiv.style.backgroundImage = `url('${ASSETS.env}')`;
-            tileDiv.style.backgroundPosition = getGridPos(tile.grid);
-            mapBox.appendChild(tileDiv);
-        });
+        run.boardLayout.forEach(() => mapBox.innerHTML += `<div class="tile">⚔️</div>`);
 
         document.getElementById('lobby-screen').classList.remove('active');
         document.getElementById('adventure-screen').classList.add('active');
@@ -543,7 +521,7 @@
         addLog("出征", `🥾 戰靴發動，攜帶了 ${run.hero.pots} 瓶藥水。`);
         if (run.pet) {
             addLog("寵物", `🐾 戰鬥跟隨中：【${run.pet.name}】加入了戰場！`);
-            if (startShield > 0) addLog("寵物", `🤖 機械狗激發【科技防護罩】，附帶了 ${startShield} 點護盾！`);
+            if (startShield > 0) addLog("寵物", `🤖 機械狗激發【科技防護罩】，為主人的裝甲附帶了 ${startShield} 點護盾！`);
         }
         updateRunUI();
     }
@@ -563,18 +541,16 @@
         if (run.hero.shield > 0) { shNode.style.display = "flex"; shNode.innerText = run.hero.shield; }
         else { shNode.style.display = "none"; }
 
+        // 刷新局內動態寵物精靈圖
         const pNode = document.getElementById('run-pet-node');
         const pAvatar = document.getElementById('run-pet-avatar');
         if (run.pet) {
             pNode.style.opacity = 1;
-            pAvatar.style.backgroundImage = `url('${ASSETS.assets}')`;
-            pAvatar.style.backgroundPosition = getGridPos(run.pet.grid);
-            pAvatar.innerText = "";
+            pAvatar.innerHTML = `<span class="game-sprite spr-asset ${run.pet.sprite}"></span>`;
             document.getElementById('run-pet-name').innerText = run.pet.name;
         } else {
             pNode.style.opacity = 0.3;
-            pAvatar.style.backgroundImage = "none";
-            pAvatar.innerText = "💤";
+            pAvatar.innerHTML = ``;
             document.getElementById('run-pet-name').innerText = "無寵物";
         }
 
@@ -582,13 +558,11 @@
             if(idx === run.currentTile) el.classList.add('active'); else el.classList.remove('active');
         });
 
+        // 刷新局內對手怪物精靈圖
         const eAvatar = document.getElementById('enemy-avatar');
         if (run.enemy) {
             document.getElementById('enemy-node').style.opacity = 1;
-            eAvatar.style.backgroundImage = `url('${ASSETS[run.enemy.type]}')`;
-            eAvatar.style.backgroundPosition = getGridPos(run.enemy.grid);
-            eAvatar.innerText = "";
-            
+            eAvatar.innerHTML = `<span class="game-sprite spr-monster ${run.enemy.sprite}"></span>`;
             document.getElementById('enemy-hp-bar').style.width = `${(run.enemy.hp / run.enemy.maxHp)*100}%`;
             document.getElementById('enemy-hp-txt').innerText = `${run.enemy.hp}/${run.enemy.maxHp}`;
             let eff = [];
@@ -597,8 +571,7 @@
             document.getElementById('enemy-status').innerText = eff.join(' | ');
         } else {
             document.getElementById('enemy-node').style.opacity = 0.2;
-            eAvatar.style.backgroundImage = "none";
-            eAvatar.innerText = "❓";
+            eAvatar.innerHTML = `<span class="game-sprite spr-monster spr-m-unknown"></span>`;
             document.getElementById('enemy-status').innerText = "";
         }
 
@@ -618,8 +591,7 @@
         let roll = Math.floor(Math.random() * 3) + 1;
         run.currentTile = Math.min(9, run.currentTile + roll);
         let isBoss = run.currentTile === 9;
-        
-        let template = isBoss ? monsters[3] : monsters[Math.floor(Math.random()*3)];
+        let template = isBoss ? monsters[2] : monsters[Math.floor(Math.random()*2)];
         run.enemy = { ...template, maxHp: template.hp };
         run.enemyEffects = { burnTurns: 0, burnDmg: 0, frozenTurns: 0 };
         document.getElementById('event-title').innerText = `${isBoss?'👑':'⚔️'} 遭遇：${run.enemy.name}`;
@@ -639,7 +611,7 @@
 
         if (run.pet && run.pet.name === "史萊姆" && Math.random() < 0.3) {
             run.hero.hp = Math.min(run.hero.maxHp, run.hero.hp + 8);
-            addLog("寵物", `🟢 史萊姆蠕動身體！治療了主人 8 點生命！`);
+            addLog("寵物", `🟢 史萊姆蠕動身體！為主人的普攻加油，治療了主人 8 點生命！`);
         }
 
         if(run.enemy.hp > 0 && Math.random() * 100 < run.runDouble) {
@@ -660,7 +632,7 @@
         if (!run.pet || !run.enemy) return;
         if (run.pet.name === "小火龍" && Math.random() < 0.5) {
             run.enemy.hp = Math.max(0, run.enemy.hp - 15);
-            addLog("寵物", `🔥 小火龍咆哮！朝敵人噴射出火焰，追加造成 15 點傷害！`);
+            addLog("寵物", `🔥 小火龍咆哮！朝敵人噴射出野生火球，追加造成 15 點傷害！`);
         }
     }
 
@@ -703,7 +675,7 @@
                 enemyDmg = 0;
             } else {
                 enemyDmg -= run.hero.shield;
-                addLog("護盾", `🛡️ 科技護盾破碎！抵消了 ${run.hero.shield} 點傷害。`);
+                addLog("護盾", `🛡️ 科技護盾破碎！破壞了 ${run.hero.shield} 點傷害，剩餘 ${enemyDmg} 點打在身上。`);
                 run.hero.shield = 0;
             }
         }
@@ -713,16 +685,16 @@
             addLog("敵人", `💥 對手猛擊主人，造成 ${enemyDmg} 點肉體傷害。`);
         }
 
-        if(run.hero.hp <= 0) { alert("💀 戰敗！與寵物一起被抬回城鎮。"); endRun(); }
+        if(run.hero.hp <= 0) { alert("💀 戰敗！與寵物一起抬回城鎮。"); endRun(); }
         updateRunUI();
     }
 
     function checkEnemyDeath() {
         if(run.enemy.hp <= 0) {
             let loot = generateLoot(); lobby.inventory.push(loot); 
-            addLog("爆裝", `🎉 擊殺！獲得 💰${run.enemy.gold} 與稀有戰利品！`);
+            addLog("爆裝", `🎉 擊殺！爆出 💰${run.enemy.gold} 與【${loot.type==='pet'?'🥚 神祕寵物蛋':'📦 未鑑定裝備'}】！`);
             run.goldEarned += run.enemy.gold;
-            if(run.currentTile === 9) { alert(`👑 征服荒野！順利通關！`); endRun(); return true; }
+            if(run.currentTile === 9) { alert(`👑 征服荒野！`); endRun(); return true; }
             run.enemy = null; document.getElementById('atk-btn').disabled = true;
             updateRunUI(); triggerRogueSelect(); return true;
         }
