@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rogue Legend - 完整圖資引用版</title>
+    <title>Rogue Legend - 六大部位與神寵協戰</title>
     <style>
         :root {
             --bg: #0d0d11;
@@ -16,6 +16,8 @@
             --orange: #fa8231;
             --text: #ffffff;
             --gray: #888899;
+            /* 網格切片基礎尺寸 */
+            --sprite-size: 50px; 
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, system-ui, sans-serif; }
@@ -36,26 +38,13 @@
 
         /* 全身配備配置網格 */
         .equip-slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-        .slot-card { background: #1a1a26; border: 1px solid #32324a; border-radius: 10px; padding: 6px; text-align: left; position: relative; min-height: 75px; display: flex; flex-direction: column; justify-content: space-between;}
+        .slot-card { background: #1a1a26; border: 1px solid #32324a; border-radius: 10px; padding: 6px; text-align: left; position: relative; min-height: 64px; display: flex; flex-direction: column; justify-content: space-between;}
         .slot-card.has-item { border-color: var(--orange); background: #1c1524; }
         .slot-card.is-pet { border-color: var(--purple); background: #151e24; }
         
-        /* 雪碧圖通用樣式 */
-        .sprite {
-            width: 40px;
-            height: 40px;
-            background-repeat: no-repeat;
-            background-size: 700% 700%; /* 7x7 網格 */
-            display: inline-block;
-            border-radius: 6px;
-        }
-        .sprite-asset { background-image: url('assets.jpg'); }
-        .sprite-monster { background-image: url('monsters.jpg'); background-size: 800% 400%; } /* 調整對應怪物圖比例 */
-        .sprite-env { background-image: url('env.jpg'); background-size: 700% 600%; }
-
         /* 庫房背包網格 */
         .inventory-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; max-height: 140px; overflow-y: auto; background: #0b0b10; padding: 6px; border-radius: 12px; border: 1px solid #232330; }
-        .inv-item { background: #1e1e2e; border: 1px solid #444; border-radius: 8px; padding: 6px; text-align: left; font-size: 0.7rem; display: flex; flex-direction: column; justify-content: space-between; }
+        .inv-item { background: #1e1e2e; border: 1px solid #444; border-radius: 8px; padding: 6px; text-align: left; font-size: 0.7rem; display: flex; flex-direction: column; justify-content: space-between; min-height: 75px; }
         
         .rarity-0 { border-color: var(--gray); color: #ccc; }       
         .rarity-1 { border-color: var(--info); color: var(--info); }   
@@ -71,16 +60,29 @@
         .lobby-skill-dot { background: #1a1a26; border: 1px solid #2d2d3d; border-radius: 8px; padding: 4px 0; font-size: 0.65rem; }
         .lobby-skill-dot.active { border-color: var(--purple); background: #261a3a; }
 
-        /* 局內地圖背景 */
-        .board-view { background-image: url('env.jpg'); background-position: 0% 0%; background-size: cover; padding: 12px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; text-align: center; border-radius: 12px; margin: 5px 15px;}
-        .tile { background: rgba(34, 34, 48, 0.85); border-radius: 8px; padding: 8px 0; font-size: 1.1rem; border: 2px solid transparent; color: white;}
-        .tile.active { border-color: var(--primary); background: rgba(61, 31, 36, 0.9); transform: scale(1.05); }
+        /* 局內地圖視覺修正 */
+        .board-view { background: #0a0a0f; padding: 12px; display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; text-align: center; background-image: url('env.jpg'); background-size: cover; background-position: center; border-radius: 12px; margin: 5px 0; }
+        .tile { background: rgba(34, 34, 48, 0.85); border-radius: 8px; padding: 8px 0; font-size: 1rem; border: 2px solid transparent; backdrop-filter: blur(2px); color: #fff; font-weight: bold; }
+        .tile.active { border-color: var(--primary); background: rgba(61, 31, 36, 0.9); transform: scale(1.05); box-shadow: 0 0 10px var(--primary); }
 
         .adventure-stage { padding: 10px 15px; text-align: center; }
         .battle-pair { display: flex; justify-content: space-between; align-items: center; width: 100%; margin: 5px 0; }
-        .entity { width: 35%; text-align: center; display: flex; flex-direction: column; align-items: center; }
-        .avatar { position: relative; width: 50px; height: 50px; display: flex; justify-content: center; align-items: center;}
-        .shield-badge { position: absolute; top: -5px; right: -5px; background: var(--info); color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 0.65rem; display: flex; justify-content: center; align-items: center; border: 1px solid #fff; font-weight: bold; z-index: 10;}
+        .entity { width: 32%; text-align: center; display: flex; flex-direction: column; align-items: center; }
+        
+        /* 👑 精準圖資剪裁容器 */
+        .game-sprite {
+            width: var(--sprite-size);
+            height: var(--sprite-size);
+            background-repeat: no-repeat;
+            background-size: calc(var(--sprite-size) * 8) auto; /* 假設橫向有8個單元 */
+            border-radius: 8px;
+            margin: 4px auto;
+            image-rendering: pixelated;
+        }
+        
+        /* 實體頭像特殊包裝 */
+        .avatar { position: relative; display: inline-block; }
+        .shield-badge { position: absolute; top: -5px; right: -5px; background: var(--info); color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 0.65rem; display: flex; justify-content: center; align-items: center; border: 1px solid #fff; font-weight: bold; z-index: 5;}
         .hp-bar { background: #32324a; height: 8px; border-radius: 4px; margin: 4px 0; overflow: hidden; width: 100%; }
         .hp-inner { background: var(--success); height: 100%; width: 100%; transition: width 0.2s; }
         .status-effect { font-size: 0.7rem; font-weight: bold; height: 16px; }
@@ -122,7 +124,7 @@
                 <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importSave(event)">
             </div>
 
-            <div class="panel-title">🥋 當前配備配置 (圖資精準對應版)</div>
+            <div class="panel-title">🥋 當前配備全身配置 (六大部位 + 🐾戰鬥神寵)</div>
             <div class="equip-slots">
                 <div class="slot-card" id="eq-weapon"></div>
                 <div class="slot-card" id="eq-armor"></div>
@@ -145,7 +147,7 @@
             </div>
 
             <div class="panel-title">⚡ 永久基礎特技修煉</div>
-            <div class="slot-card" style="display:flex; justify-content: space-around; text-align:center; padding: 4px; min-height: auto;">
+            <div class="slot-card" style="display:flex; justify-content: space-around; text-align:center; padding: 4px; min-height: auto; flex-direction:row;">
                 <div>🎯 暴擊率: <strong style="color:var(--primary)" id="lb-crit">15%</strong></div>
                 <div>⚡ 連擊率: <strong style="color:var(--info)" id="lb-double">15%</strong></div>
             </div>
@@ -170,19 +172,20 @@
 
             <div class="battle-pair">
                 <div class="entity">
-                    <div class="avatar" id="hero-avatar-node">
-                        <div class="sprite sprite-asset" style="background-position: 66.6% 16.6%;"></div> <div class="shield-badge" id="hero-shield" style="display:none;">0</div>
+                    <div class="avatar">
+                        <div class="game-sprite" style="background-image:url('assets.jpg'); background-position: 0px -50px;"></div>
+                        <div class="shield-badge" id="hero-shield" style="display:none;">0</div>
                     </div>
                     <div id="hero-status" class="status-effect" style="color:var(--success)">玩家</div>
                     <div class="hp-bar"><div id="hero-hp-bar" class="hp-inner"></div></div>
                     <div id="hero-hp-txt" style="font-size:0.75rem">0/0</div>
                 </div>
-                <div class="entity" id="run-pet-node" style="width: 24%; opacity:0.3;">
-                    <div class="avatar" id="run-pet-avatar"></div>
-                    <div style="font-size:0.65rem; color:var(--purple); font-weight:bold; margin-top:2px;" id="run-pet-name">無寵物</div>
+                <div class="entity" id="run-pet-node" style="width: 20%; opacity:0.3;">
+                    <div id="run-pet-avatar"></div>
+                    <div style="font-size:0.65rem; color:var(--purple); font-weight:bold;" id="run-pet-name">無寵物</div>
                 </div>
                 <div class="entity" id="enemy-node" style="opacity:0.2;">
-                    <div class="avatar" id="enemy-avatar"></div>
+                    <div id="enemy-avatar-box"></div>
                     <div id="enemy-status" class="status-effect" style="color:var(--orange)"></div>
                     <div class="hp-bar"><div id="enemy-hp-bar" class="hp-inner"></div></div>
                     <div id="enemy-hp-txt" style="font-size:0.75rem">0/0</div>
@@ -226,24 +229,22 @@
 </div>
 
 <script>
-    // 💡 根據 assets.jpg 與圖資精確定義部位與雪碧圖坐標 (7x7 網格計算百分比)
-    // 列：A=0, B=16.6%, C=33.3%, D=50%, E=66.6%, F=83.3%, G=100%
-    // 行：1=0, 2=16.6%, 3=33.3%, 4=50%, 5=66.6%, 6=83.3%, 7=100%
+    // 💡 六大部位規格 + 🐾 精準圖資坐標定義 (A1對應 0 0, B1對應 -50px 0, A2對應 0 -50px)
     const SLOT_DEFS = {
-        weapon: { name: "武器", statName: "攻擊力", unit: "", pos: "0% 0%" },       // A1: 聖劍
-        armor:  { name: "胸甲", statName: "最大生命", unit: "", pos: "33.3% 16.6%" }, // C2: 鋼鐵鎧甲
-        helmet: { name: "頭盔", statName: "最大生命", unit: "", pos: "0% 16.6%" },   // A2: 鋼鐵頭盔
-        ring:   { name: "戒指", statName: "暴擊率", unit: "%", pos: "16.6% 33.3%" },  // B3: 魔法戒指
-        amulet: { name: "項鍊", statName: "連擊率", unit: "%", pos: "33.3% 33.3%" },  // C3: 幸運護身符
-        boots:  { name: "戰靴", statName: "初始藥水", unit: "瓶", pos: "66.6% 33.3%" }, // E3: 皮革戰靴
-        pet:    { name: "戰鬥神寵", statName: "協戰特技", unit: "" }
+        weapon: { name: "武器", statName: "攻擊力", unit: "", file: "assets.jpg", pos: "0px 0px" }, // A1
+        armor:  { name: "胸甲", statName: "最大生命", unit: "", file: "assets.jpg", pos: "-100px -50px" }, // C2
+        helmet: { name: "頭盔", statName: "最大生命", unit: "", file: "assets.jpg", pos: "0px -50px" }, // A2
+        ring:   { name: "戒指", statName: "暴擊率", unit: "%", file: "assets.jpg", pos: "-50px -100px" }, // B3
+        amulet: { name: "項鍊", statName: "連擊率", unit: "%", file: "assets.jpg", pos: "-100px -100px" }, // C3
+        boots:  { name: "戰靴", statName: "初始藥水", unit: "瓶", file: "assets.jpg", pos: "-200px -100px" }, // E3
+        pet:    { name: "戰鬥神寵", statName: "協戰特技", unit: "", file: "assets.jpg", pos: "-200px -250px" } // E6
     };
 
-    // 🐾 根據 assets.jpg 第6行精確對應神寵數據
+    // 🐾 三大獨特寵物池數據與精確 Sprite 坐標
     const PET_POOL = [
-        { name: "小火龍", rarity: 2, desc: "回合結束 50% 機率噴火造成 15 點傷害", pos: "0% 83.3%" },   // A6
-        { name: "機械狗", rarity: 1, desc: "開局直接賦予主人 20% 生命值科技護盾", pos: "16.6% 83.3%" }, // B6
-        { name: "史萊姆", rarity: 0, desc: "主人普攻時 30% 機率治療 8 點生命", pos: "33.3% 83.3%" }    // C6
+        { name: "小火龍", file: "assets.jpg", pos: "0px -250px", rarity: 2, desc: "回合結束時 50% 機率噴火轟炸 15 點傷害" }, // A6
+        { name: "機械狗", file: "assets.jpg", pos: "-50px -250px", rarity: 1, desc: "開局直接賦予主人 20% 最大生命值的科技護盾" }, // B6
+        { name: "史萊姆", file: "assets.jpg", pos: "-100px -250px", rarity: 0, desc: "主人普攻時 30% 機率幫主人治療 8 點生命" } // C6
     ];
 
     const RARITY_NAMES = ["普通", "魔法", "史詩"];
@@ -267,13 +268,11 @@
         goldEarned: 0, currentTile: -1, boardLayout: []
     };
 
-    // 👹 根據 monsters.jpg 內容更新精確怪物網格定位 (8x4 網格)
-    // 橫向：A1=0%, B1=14.3%, C1=28.5%, A2=42.8%, B2=57.1%, C2=71.4%, A7=85.7%, A8=100%
+    // 🎯 精準修正怪物對應坐標
     const monsters = [
-        { name: "草原史萊姆", hp: 40, dmg: 8, gold: 35, pos: "14.3% 0%" },    // B1
-        { name: "草原野狼", hp: 55, dmg: 11, gold: 50, pos: "0% 33.3%" },     // A2
-        { name: "哥布林戰士", hp: 75, dmg: 14, gold: 75, pos: "14.3% 33.3%" }, // B2
-        { name: "王宮騎士 (Boss)", hp: 220, dmg: 24, gold: 400, pos: "42.8% 100%" } // D3/E3
+        { name: "草原狼", file: "monsters.jpg", pos: "0px -50px", hp: 40, dmg: 8, gold: 35 }, // A2
+        { name: "哥布林戰士", file: "monsters.jpg", pos: "-50px -50px", hp: 75, dmg: 13, gold: 65 }, // B2
+        { name: "滅世魔皇 (Boss)", file: "monsters.jpg", pos: "0px -150px", hp: 200, dmg: 22, gold: 350 } // D1
     ];
 
     function generateLoot() {
@@ -288,15 +287,14 @@
             return {
                 id: Date.now() + Math.random().toString(36).substr(2, 4),
                 type: "pet", rarity: rarity, identified: false,
-                name: "神祕寵物蛋 🥚", pos: "66.6% 66.6%", // D4 王座/寶物包圖示代用
-                desc: "鑑定後可孵化出強力協戰神寵", identifyCost: 60, sellValue: 40
+                name: "未孵化神祕寵物蛋 🥚", file: "assets.jpg", pos: "-200px -200px", desc: "鑑定後可孵化出強力協戰寵物", // E5 卷軸/蛋
+                identifyCost: 60, sellValue: 40
             };
         }
 
         return {
             id: Date.now() + Math.random().toString(36).substr(2, 4),
             type: randType, rarity: rarity, identified: false, stat: 0,
-            pos: SLOT_DEFS[randType].pos,
             identifyCost: (rarity + 1) * 35, sellValue: (rarity + 1) * 20
         };
     }
@@ -312,9 +310,10 @@
         if (item.type === "pet") {
             let pData = PET_POOL[Math.floor(Math.random() * PET_POOL.length)];
             item.name = pData.name;
+            item.file = pData.file;
+            item.pos = pData.pos;
             item.rarity = pData.rarity;
             item.desc = pData.desc;
-            item.pos = pData.pos;
         } else {
             let roll = Math.floor(Math.random() * 10) + 5; 
             let mult = item.rarity + 1;
@@ -322,6 +321,9 @@
             else if (item.type === "armor" || item.type === "helmet") item.stat = roll * mult * 5; 
             else if (item.type === "ring" || item.type === "amulet") item.stat = Math.floor(roll * mult * 0.8);
             else if (item.type === "boots") item.stat = mult;
+            
+            item.file = SLOT_DEFS[item.type].file;
+            item.pos = SLOT_DEFS[item.type].pos;
         }
 
         item.sellValue = Math.floor(item.sellValue * 3);
@@ -350,20 +352,20 @@
         saveToLocalStorage(); initLobby();
     }
 
-    function saveToLocalStorage() { localStorage.setItem("rogue_7slots_sprites_save", JSON.stringify(lobby)); }
+    function saveToLocalStorage() { localStorage.setItem("rogue_7slots_save", JSON.stringify(lobby)); }
     function loadFromLocalStorage() {
-        const saved = localStorage.getItem("rogue_7slots_sprites_save");
+        const saved = localStorage.getItem("rogue_7slots_save");
         if (saved) { try { const p = JSON.parse(saved); if(p.equipped) lobby = p; } catch(e){} }
     }
 
     function exportSave() {
         const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(lobby));
-        const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", "rogue_assets_save.json"); dl.click();
+        const dl = document.createElement('a'); dl.setAttribute("href", dataStr); dl.setAttribute("download", "rogue_7slots.json"); dl.click();
     }
     function importSave(e) {
         const file = e.target.files[0]; if (!file) return;
         const r = new FileReader(); r.onload = function(evt) {
-            try { const data = JSON.parse(evt.target.result); if(data.equipped) { lobby=data; saveToLocalStorage(); initLobby(); alert("存檔加載成功！"); } }catch(err){alert("格式錯誤");}
+            try { const data = JSON.parse(evt.target.result); if(data.equipped) { lobby=data; saveToLocalStorage(); initLobby(); alert("傳承成功！"); } }catch(err){alert("格式錯誤");}
         }; r.readAsText(file);
     }
 
@@ -382,23 +384,18 @@
                 node.className = `slot-card has-item rarity-${item.rarity} ${slotKey === 'pet' ? 'is-pet' : ''}`;
                 if (slotKey === "pet") {
                     node.innerHTML = `
-                        <div style="display:flex; align-items:center; gap:5px;">
-                            <div class="sprite sprite-asset" style="background-position: ${item.pos}; width:30px; height:30px;"></div>
-                            <div>
-                                <small style="color:#b975ff; font-size:0.55rem;">🐾隨行神寵</small>
-                                <div style="font-size:0.65rem; font-weight:bold;">${item.name}</div>
-                            </div>
+                        <small style="color:#b975ff; font-size:0.6rem;">🐾 戰鬥隨行</small>
+                        <div style="display:flex; align-items:center; gap:4px;">
+                            <div class="game-sprite" style="background-image:url('${item.file}'); background-position:${item.pos}; margin:0; width:30px; height:30px; background-size:calc(30px * 8) auto;"></div>
+                            <div style="font-size:0.7rem; font-weight:bold;">${item.name}</div>
                         </div>
-                        <div style="font-size:0.55rem; color:#aaa; margin-top:2px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${item.desc}</div>
                     `;
                 } else {
                     node.innerHTML = `
-                        <div style="display:flex; align-items:center; gap:5px;">
-                            <div class="sprite sprite-asset" style="background-position: ${item.pos}; width:30px; height:30px;"></div>
-                            <div>
-                                <small style="color:cyan; font-size:0.55rem;">已裝備</small>
-                                <div style="font-size:0.65rem; font-weight:bold;">${RARITY_NAMES[item.rarity]}${def.name}</div>
-                            </div>
+                        <small style="color:cyan; font-size:0.6rem;">已裝備</small>
+                        <div style="display:flex; align-items:center; gap:4px;">
+                            <div class="game-sprite" style="background-image:url('${item.file}'); background-position:${item.pos}; margin:0; width:24px; height:24px; background-size:calc(24px * 8) auto;"></div>
+                            <div style="font-size:0.65rem; font-weight:bold; overflow:hidden; white-space:nowrap;">${def.name}</div>
                         </div>
                         <div style="font-size:0.6rem; color:var(--success)">+${item.stat}${def.unit}</div>
                     `;
@@ -406,15 +403,15 @@
             } else {
                 node.className = "slot-card";
                 node.innerHTML = `
-                    <small style="color:var(--gray); font-size:0.6rem;">${def.name}欄位</small>
-                    <div style="font-size:0.65rem; color:#555;">空</div>
+                    <small style="color:var(--gray); font-size:0.6rem;">${def.name}欄</small>
+                    <div style="font-size:0.65rem; color:#555; margin-top:4px;">空</div>
                 `;
             }
         });
 
         const box = document.getElementById('inventory-box'); box.innerHTML = '';
         if(lobby.inventory.length === 0) {
-            box.innerHTML = `<div style="grid-column:span 2; color:#555; font-size:0.75rem; padding:10px;">倉庫內暫無空閒戰利品。</div>`;
+            box.innerHTML = `<div style="grid-column:span 2; color:#555; font-size:0.75rem; padding:10px;">倉庫內暫無空間戰利品。</div>`;
         } else {
             lobby.inventory.forEach(item => {
                 let def = SLOT_DEFS[item.type];
@@ -422,16 +419,16 @@
                 div.className = `inv-item rarity-${item.rarity}`;
                 if(!item.identified) {
                     div.innerHTML = `
-                        <div><strong>❓ 未鑑定 ${item.type==='pet'?'寵物蛋':'裝備'}</strong><br><span style="color:var(--gold); font-size:0.65rem;">鑑定: 💰${item.identifyCost}</span></div>
+                        <div><strong>❓ 未鑑定${item.type==='pet'?'寵物蛋':'裝備'}</strong><br><span style="color:var(--gold); font-size:0.65rem;">鑑定: 💰${item.identifyCost}</span></div>
                         <div class="inv-actions">
                             <button class="inv-btn btn-id" onclick="identifyItem('${item.id}')">鑑定</button>
-                            <button class="inv-btn btn-sl" onclick="sellItem('${item.id}')">出售</button>
+                            <button class="inv-btn btn-sl" onclick="sellItem('${item.id}')">💰${item.sellValue}</button>
                         </div>`;
                 } else {
                     if (item.type === "pet") {
                         div.innerHTML = `
-                            <div style="display:flex; gap:5px; align-items:center;">
-                                <div class="sprite sprite-asset" style="background-position: ${item.pos}; width:28px; height:28px;"></div>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <div class="game-sprite" style="background-image:url('${item.file}'); background-position:${item.pos}; margin:0; width:32px; height:32px; background-size:calc(32px * 8) auto;"></div>
                                 <div><strong>${item.name}</strong></div>
                             </div>
                             <div class="inv-actions">
@@ -440,9 +437,9 @@
                             </div>`;
                     } else {
                         div.innerHTML = `
-                            <div style="display:flex; gap:5px; align-items:center;">
-                                <div class="sprite sprite-asset" style="background-position: ${item.pos}; width:28px; height:28px;"></div>
-                                <div><strong>[${RARITY_NAMES[item.rarity]}] ${def.name}</strong><br><span style="color:var(--success); font-weight:bold;">+${item.stat}</span></div>
+                            <div style="display:flex; align-items:center; gap:6px;">
+                                <div class="game-sprite" style="background-image:url('${item.file}'); background-position:${item.pos}; margin:0; width:32px; height:32px; background-size:calc(32px * 8) auto;"></div>
+                                <div><strong>[${RARITY_NAMES[item.rarity]}]${def.name}</strong><br><span style="color:var(--success); font-weight:bold; font-size:0.65rem;">+${item.stat}${def.unit}</span></div>
                             </div>
                             <div class="inv-actions">
                                 <button class="inv-btn btn-eq" onclick="equipItem('${item.id}')">裝備</button>
@@ -494,10 +491,10 @@
         document.getElementById('adventure-screen').classList.add('active');
         document.getElementById('log-container').innerHTML = '';
         
-        addLog("出征", `🥾 戰靴發動，本局攜帶了 ${run.hero.pots} 瓶恢復藥水進入荒野。`);
+        addLog("出征", `🥾 戰靴發動，攜帶了 ${run.hero.pots} 瓶藥水。`);
         if (run.pet) {
-            addLog("寵物", `🐾 戰鬥隨行：【${run.pet.name}】成功協同切入戰場！`);
-            if (startShield > 0) addLog("寵物", `🤖 機械狗激發科技防護罩，為主人的裝甲附帶了 ${startShield} 點護盾！`);
+            addLog("寵物", `🐾 戰鬥跟隨中：【${run.pet.name}】加入了戰場！`);
+            if (startShield > 0) addLog("寵物", `🤖 機械狗激發【科技防護罩】，為主人的裝甲附帶了 ${startShield} 點護盾！`);
         }
         updateRunUI();
     }
@@ -521,11 +518,11 @@
         const pAvatar = document.getElementById('run-pet-avatar');
         if (run.pet) {
             pNode.style.opacity = 1;
-            pAvatar.innerHTML = `<div class="sprite sprite-asset" style="background-position: ${run.pet.pos};"></div>`;
+            pAvatar.innerHTML = `<div class="game-sprite" style="background-image:url('${run.pet.file}'); background-position:${run.pet.pos};"></div>`;
             document.getElementById('run-pet-name').innerText = run.pet.name;
         } else {
             pNode.style.opacity = 0.3;
-            pAvatar.innerHTML = `<div class="sprite sprite-asset" style="background-position: 66.6% 66.6%; opacity:0.3;"></div>`;
+            pAvatar.innerHTML = `<div class="game-sprite" style="background-color:#222;"></div>`;
             document.getElementById('run-pet-name').innerText = "無寵物";
         }
 
@@ -533,10 +530,10 @@
             if(idx === run.currentTile) el.classList.add('active'); else el.classList.remove('active');
         });
 
-        const eAvatar = document.getElementById('enemy-avatar');
+        const eBox = document.getElementById('enemy-avatar-box');
         if (run.enemy) {
             document.getElementById('enemy-node').style.opacity = 1;
-            eAvatar.innerHTML = `<div class="sprite sprite-monster" style="background-position: ${run.enemy.pos}; width:45px; height:45px;"></div>`;
+            eBox.innerHTML = `<div class="game-sprite" style="background-image:url('${run.enemy.file}'); background-position:${run.enemy.pos};"></div>`;
             document.getElementById('enemy-hp-bar').style.width = `${(run.enemy.hp / run.enemy.maxHp)*100}%`;
             document.getElementById('enemy-hp-txt').innerText = `${run.enemy.hp}/${run.enemy.maxHp}`;
             let eff = [];
@@ -545,7 +542,7 @@
             document.getElementById('enemy-status').innerText = eff.join(' | ');
         } else {
             document.getElementById('enemy-node').style.opacity = 0.2;
-            eAvatar.innerHTML = '';
+            eBox.innerHTML = `<div class="game-sprite" style="background-color:#222;"></div>`;
             document.getElementById('enemy-status').innerText = "";
         }
 
@@ -565,12 +562,10 @@
         let roll = Math.floor(Math.random() * 3) + 1;
         run.currentTile = Math.min(9, run.currentTile + roll);
         let isBoss = run.currentTile === 9;
-        
-        // 隨機遭遇普通小怪，第十格遭遇大 Boss 王宮騎士
-        let template = isBoss ? monsters[3] : monsters[Math.floor(Math.random()*3)];
+        let template = isBoss ? monsters[2] : monsters[Math.floor(Math.random()*2)];
         run.enemy = { ...template, maxHp: template.hp };
         run.enemyEffects = { burnTurns: 0, burnDmg: 0, frozenTurns: 0 };
-        document.getElementById('event-title').innerText = `${isBoss?'👑 最終魔王':'⚔️ 遭遇敵人'}：${run.enemy.name}`;
+        document.getElementById('event-title').innerText = `${isBoss?'👑':'⚔️'} 遭遇：${run.enemy.name}`;
         document.getElementById('dice-btn').disabled = true; document.getElementById('atk-btn').disabled = false;
         updateRunUI();
     }
@@ -582,12 +577,12 @@
         let finalDmg = isCrit ? baseDmg * 2 : baseDmg;
 
         run.enemy.hp = Math.max(0, run.enemy.hp - finalDmg);
-        if(isCrit) addLog("特技", `🎯 裝備共鳴！觸發【致命暴擊】重創敵方 ${finalDmg} 點！`);
+        if(isCrit) addLog("特技", `🎯 裝備共鳴！【致命暴擊】重創敵方 ${finalDmg} 點！`);
         else addLog("普攻", `⚔️ 主人普通攻擊造成 ${finalDmg} 點傷害。`);
 
         if (run.pet && run.pet.name === "史萊姆" && Math.random() < 0.3) {
             run.hero.hp = Math.min(run.hero.maxHp, run.hero.hp + 8);
-            addLog("寵物", `🟢 史萊姆發動治療！幫主人的普攻加油，回復了 8 點生命值值！`);
+            addLog("寵物", `🟢 史萊姆蠕動身體！為主人的普攻加油，治療了主人 8 點生命！`);
         }
 
         if(run.enemy.hp > 0 && Math.random() * 100 < run.runDouble) {
@@ -608,7 +603,7 @@
         if (!run.pet || !run.enemy) return;
         if (run.pet.name === "小火龍" && Math.random() < 0.5) {
             run.enemy.hp = Math.max(0, run.enemy.hp - 15);
-            addLog("寵物", `🔥 小火龍咆哮！朝敵人噴射烈焰，追加造成 15 點爆破傷害！`);
+            addLog("寵物", `🔥 小火龍咆哮！朝敵人噴射出野生火球，追加造成 15 點傷害！`);
         }
     }
 
@@ -616,14 +611,14 @@
         let sk = lobby.skills[id]; if(!run.enemy || !sk.unlocked || sk.cd > 0 || run.hero.hp <= 0) return;
         let dmg = sk.baseDmg + (sk.lvl * sk.scale);
         run.enemy.hp = Math.max(0, run.enemy.hp - dmg); sk.cd = sk.maxCd;
-        addLog("技能", `🔮 轟炸 【${sk.name}】 造成 ${dmg} 點高額傷害！`);
+        addLog("技能", `🔮 轟炸 【${sk.name}】 造成 ${dmg} 點傷害！`);
         if(id == 2) {
             let heal = Math.floor(dmg * 0.5); run.hero.hp = Math.min(run.hero.maxHp, run.hero.hp + heal);
-            addLog("吸血", `🩸 回復生命 ${heal} 點值。`);
+            addLog("吸血", `🩸 回復生命 ${heal} 點。`);
         } else if(id == 3) {
             run.enemyEffects.burnTurns = 3; run.enemyEffects.burnDmg = Math.floor(dmg * 0.4);
         } else if(id == 4) {
-            run.enemyEffects.frozenTurns = 2; addLog("冰凍", `❄️ 冰封對手！使其喪失行動力。`);
+            run.enemyEffects.frozenTurns = 2; addLog("冰凍", `❄️ 冰封對手！`);
         }
         if(checkEnemyDeath()) return; 
         handlePetEndTurnAction();
@@ -634,12 +629,12 @@
     function handleEnemyTurn() {
         if(run.enemyEffects.burnTurns > 0) {
             run.enemy.hp = Math.max(0, run.enemy.hp - run.enemyEffects.burnDmg);
-            addLog("燃燒", `🔥 燃燒持續跳血：敵人受到 ${run.enemyEffects.burnDmg} 點灼燒傷害。`);
+            addLog("燃燒", `🔥 燃燒跳血：敵人受到 ${run.enemyEffects.burnDmg} 點傷害。`);
             if(checkEnemyDeath()) return;
             run.enemyEffects.burnTurns--; 
         }
         if(run.enemyEffects.frozenTurns > 0) {
-            addLog("冰凍", `❄️ 敵人處於冰凍狀態，本回合無法行動。`);
+            addLog("冰凍", `❄️ 敵人凍結中，喪失本回合行動力。`);
             run.enemyEffects.frozenTurns--; updateRunUI(); return;
         }
         let enemyDmg = Math.floor(Math.random() * 4) + run.enemy.dmg;
@@ -647,30 +642,30 @@
         if (run.hero.shield > 0) {
             if (run.hero.shield >= enemyDmg) {
                 run.hero.shield -= enemyDmg;
-                addLog("護盾", `🛡️ 科技護盾完全吸收了 ${enemyDmg} 點傷害！`);
+                addLog("護盾", `🛡️ 科技護盾吸收了全部 ${enemyDmg} 點傷害！`);
                 enemyDmg = 0;
             } else {
                 enemyDmg -= run.hero.shield;
-                addLog("護盾", `🛡️ 科技護盾破裂！抵消了 ${run.hero.shield} 點傷害，剩餘 ${enemyDmg} 點貫穿至本體。`);
+                addLog("護盾", `🛡️ 科技護盾破碎！破壞了 ${run.hero.shield} 點傷害，剩餘 ${enemyDmg} 點打在身上。`);
                 run.hero.shield = 0;
             }
         }
 
         if (enemyDmg > 0) {
             run.hero.hp = Math.max(0, run.hero.hp - enemyDmg);
-            addLog("敵人", `💥 敵人發動猛擊，對您造成了 ${enemyDmg} 點實質傷害。`);
+            addLog("敵人", `💥 對手猛擊主人，造成 ${enemyDmg} 點肉體傷害。`);
         }
 
-        if(run.hero.hp <= 0) { alert("💀 戰敗！不幸在荒野倒下，被寵物抬回城鎮..."); endRun(); }
+        if(run.hero.hp <= 0) { alert("💀 戰敗！與寵物一起抬回城鎮。"); endRun(); }
         updateRunUI();
     }
 
     function checkEnemyDeath() {
         if(run.enemy.hp <= 0) {
             let loot = generateLoot(); lobby.inventory.push(loot); 
-            addLog("戰利品", `🎉 成功擊殺！爆出金幣 💰${run.enemy.gold} 與 ${loot.name === '神祕寵物蛋 🥚' ? '【🥚神祕寵物蛋】' : '【📦未鑑定神裝】'}！`);
+            addLog("爆裝", `🎉 擊殺！爆出 💰${run.enemy.gold} 與【${loot.type==='pet'?'🥚 神祕寵物蛋':'📦 未鑑定'+SLOT_DEFS[loot.type].name}】！`);
             run.goldEarned += run.enemy.gold;
-            if(run.currentTile === 9) { alert(`👑 恭喜！成功討伐王宮騎士，征服了這片荒野！`); endRun(); return true; }
+            if(run.currentTile === 9) { alert(`👑 征服荒野！`); endRun(); return true; }
             run.enemy = null; document.getElementById('atk-btn').disabled = true;
             updateRunUI(); triggerRogueSelect(); return true;
         }
@@ -680,12 +675,12 @@
     function triggerRogueSelect() {
         const cardPool = document.getElementById('card-pool'); cardPool.innerHTML = '';
         const pool = [
-            { name: "⚡ 升級【雷擊術】", type: "skill", id: 1, desc: "永久提升雷擊的術法強度與爆發力" },
-            { name: "🩸 升級【吸血斬】", type: "skill", id: 2, desc: "永久增強利刃吸血的恢復效果值" },
-            { name: "🔥 升級【火球術】", type: "skill", id: 3, desc: "永久擴大火球術的後續燃燒持續傷害" },
-            { name: "❄️ 升級【冰凍術】", type: "skill", id: 4, desc: "永久延長寒冬冰封敵人的掌控機率" },
-            { name: "🎯 天賦：致命暴擊率", type: "passive", id: "crit", desc: "角色永久獲得基礎暴擊率 +15%" },
-            { name: "⚡ 天賦：雙重連擊率", type: "passive", id: "double", desc: "角色永久獲得基礎連擊追擊率 +15%" }
+            { name: "⚡ 升級【雷擊術】", type: "skill", id: 1, desc: "永久升級雷擊爆發力" },
+            { name: "🩸 升級【吸血斬】", type: "skill", id: 2, desc: "永久升級吸血恢復量" },
+            { name: "🔥 升級【火球術】", type: "skill", id: 3, desc: "永久升級火球燃燒值" },
+            { name: "❄️ 升級【冰凍術】", type: "skill", id: 4, desc: "永久升級冰凍冰風暴" },
+            { name: "🎯 天賦：致命暴擊率", type: "passive", id: "crit", desc: "角色永久基底暴擊率 +15%" },
+            { name: "⚡ 天賦：雙重連擊率", type: "passive", id: "double", desc: "角色永久基底連擊率 +15%" }
         ];
         let shuffled = pool.sort(() => 0.5 - Math.random()).slice(0, 3);
         shuffled.forEach(opt => {
@@ -706,7 +701,7 @@
     function usePotion() {
         if(run.hero.pots > 0 && run.hero.hp > 0) {
             run.hero.pots--; run.hero.hp = Math.min(run.hero.maxHp, run.hero.hp + 60);
-            addLog("治療", "💊 飲用恢復藥水，生命值大幅回升。"); updateRunUI();
+            addLog("治療", "💊 飲用治療藥水。"); updateRunUI();
         }
     }
 
