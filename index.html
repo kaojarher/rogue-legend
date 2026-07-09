@@ -21,12 +21,72 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, system-ui, sans-serif; }
         body { background: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 10px; }
 
-        .game-app { width: 100%; max-width: 480px; background: var(--card); border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.7); overflow: hidden; display: flex; flex-direction: column; }
-        .screen { display: none; flex-direction: column; width: 100%; }
+        .game-app { width: 100%; max-width: 480px; max-height: 96vh; background: var(--card); border-radius: 24px; box-shadow: 0 20px 50px rgba(0,0,0,0.7); overflow: hidden; display: flex; flex-direction: column; }
+        .screen { display: none; flex-direction: column; width: 100%; max-height: 96vh; overflow-y: auto; }
         .screen.active { display: flex; }
 
-        .header { display: flex; justify-content: space-between; padding: 15px 20px; background: rgba(0,0,0,0.4); font-size: 0.9rem; font-weight: bold; border-bottom: 2px solid #232330; }
+        /* 🖥️ 桌面響應式：畫面加寬時，遊戲卡片跟著放大填滿視窗，而非固定手機寬度 */
+        @media (min-width: 700px) {
+            body { padding: clamp(10px, 3vh, 40px); }
+            html { font-size: 17px; }
+            .game-app { max-width: 820px; height: calc(100vh - clamp(20px, 6vh, 80px)); max-height: none; border-radius: 28px; }
+            .screen { height: 100%; max-height: none; }
+            .equip-slots { grid-template-columns: repeat(8, 1fr); }
+            .lobby-skills-display { grid-template-columns: repeat(4, 1fr); }
+            .inventory-grid { grid-template-columns: repeat(4, 1fr); max-height: 360px; }
+            .board-view { grid-template-columns: repeat(10, 1fr); }
+        }
+        @media (min-width: 1100px) {
+            html { font-size: 18px; }
+            .game-app { max-width: 920px; }
+        }
+
+        .header { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 6px; padding: 15px 20px; background: rgba(0,0,0,0.4); font-size: 0.9rem; font-weight: bold; border-bottom: 2px solid #232330; }
         .currency { color: var(--gold); }
+
+        .spr { display:inline-block; width:1em; height:1em; background-image:url('sprite.png'); background-size:700% 500%; background-repeat:no-repeat; vertical-align:-0.15em; }
+        .spr-castle { background-position:0% 0%; }
+        .spr-gold { background-position:16.6667% 0%; }
+        .spr-save { background-position:33.3333% 0%; }
+        .spr-export { background-position:50% 0%; }
+        .spr-import { background-position:66.6667% 0%; }
+        .spr-armorset { background-position:83.3333% 0%; }
+        .spr-weapon { background-position:100% 0%; }
+        .spr-shield { background-position:0% 25%; }
+        .spr-helmet { background-position:16.6667% 25%; }
+        .spr-ring { background-position:33.3333% 25%; }
+        .spr-boots { background-position:50% 25%; }
+        .spr-amulet { background-position:66.6667% 25%; }
+        .spr-paw { background-position:83.3333% 25%; }
+        .spr-backpack { background-position:100% 25%; }
+        .spr-lightning { background-position:0% 50%; }
+        .spr-blood { background-position:16.6667% 50%; }
+        .spr-flame { background-position:33.3333% 50%; }
+        .spr-snowflake { background-position:50% 50%; }
+        .spr-crit { background-position:66.6667% 50%; }
+        .spr-dice { background-position:83.3333% 50%; }
+        .spr-knight { background-position:100% 50%; }
+        .spr-wolf { background-position:0% 75%; }
+        .spr-lion { background-position:16.6667% 75%; }
+        .spr-devil { background-position:33.3333% 75%; }
+        .spr-egg { background-position:50% 75%; }
+        .spr-sleep { background-position:66.6667% 75%; }
+        .spr-question { background-position:83.3333% 75%; }
+        .spr-crate { background-position:100% 75%; }
+        .spr-explosion { background-position:0% 100%; }
+        .spr-sparkle { background-position:16.6667% 100%; }
+        .spr-hourglass1 { background-position:33.3333% 100%; }
+        .spr-crystalball { background-position:50% 100%; }
+        .spr-hourglass2 { background-position:66.6667% 100%; }
+        .spr-hourglass3 { background-position:83.3333% 100%; }
+        .spr-gem { background-position:100% 100%; }
+
+        .emoji-lg { font-size: 2.5em; line-height: 1; display: inline-block; vertical-align: middle; }
+        .icon-lg { font-size: 2.5em; line-height: 1; display: block; text-align: center; }
+        .panel-title, .lobby-skill-dot, .slot-card, .header, .save-box, button {
+            flex-wrap: wrap;
+        }
+        .slot-card, .inv-item { overflow: visible; min-height: auto; }
 
         .lobby-main { padding: 12px 15px; text-align: center; }
         .panel-title { text-align: left; font-size: 0.85rem; color: #888; margin-top: 10px; margin-bottom: 4px; font-weight: bold;}
@@ -36,13 +96,13 @@
 
         /* 👑 全身配備配置網格 (新增寵物格後改為 4x2 布局) */
         .equip-slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-        .slot-card { background: #1a1a26; border: 1px solid #32324a; border-radius: 10px; padding: 6px; text-align: left; position: relative; min-height: 58px;}
+        .slot-card { background: #1a1a26; border: 1px solid #32324a; border-radius: 10px; padding: 6px; text-align: left; position: relative; min-height: 58px; display: flex; flex-direction: column; align-items: center; gap: 2px; }
         .slot-card.has-item { border-color: var(--orange); background: #1c1524; }
         .slot-card.is-pet { border-color: var(--purple); background: #151e24; }
         
         /* 庫房背包網格 */
-        .inventory-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; max-height: 120px; overflow-y: auto; background: #0b0b10; padding: 6px; border-radius: 12px; border: 1px solid #232330; }
-        .inv-item { background: #1e1e2e; border: 1px solid #444; border-radius: 8px; padding: 6px; text-align: left; font-size: 0.7rem; display: flex; flex-direction: column; justify-content: space-between; }
+        .inventory-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; max-height: 220px; overflow-y: auto; background: #0b0b10; padding: 6px; border-radius: 12px; border: 1px solid #232330; }
+        .inv-item { background: #1e1e2e; border: 1px solid #444; border-radius: 8px; padding: 6px; text-align: center; font-size: 0.7rem; display: flex; flex-direction: column; justify-content: space-between; align-items: center; gap: 4px; }
         
         .rarity-0 { border-color: var(--gray); color: #ccc; }       
         .rarity-1 { border-color: var(--info); color: var(--info); }   
@@ -55,7 +115,7 @@
         .btn-sl { background: var(--primary); }
 
         .lobby-skills-display { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-        .lobby-skill-dot { background: #1a1a26; border: 1px solid #2d2d3d; border-radius: 8px; padding: 4px 0; font-size: 0.65rem; }
+        .lobby-skill-dot { background: #1a1a26; border: 1px solid #2d2d3d; border-radius: 8px; padding: 4px 0; font-size: 0.65rem; display: flex; flex-direction: column; align-items: center; gap: 2px; text-align: center; }
         .lobby-skill-dot.active { border-color: var(--purple); background: #261a3a; }
 
         /* 局內 */
@@ -66,7 +126,29 @@
         .adventure-stage { padding: 10px 15px; text-align: center; }
         .battle-pair { display: flex; justify-content: space-between; align-items: center; width: 100%; margin: 5px 0; }
         .entity { width: 32%; text-align: center; }
-        .avatar { font-size: 3rem; position: relative; }
+        .avatar { font-size: 3rem; position: relative; display: inline-block; animation: idle-float 2.4s ease-in-out infinite; }
+        .avatar.shake-atk { animation: shake-atk 0.4s ease; }
+        .avatar.shake-hit { animation: shake-hit 0.4s ease; }
+
+        @keyframes idle-float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-4px) rotate(-2deg); }
+        }
+        @keyframes shake-atk {
+            0% { transform: translateX(0) scale(1); }
+            20% { transform: translateX(10px) scale(1.1); }
+            40% { transform: translateX(-6px) scale(1.05); }
+            60% { transform: translateX(4px) scale(1.02); }
+            100% { transform: translateX(0) scale(1); }
+        }
+        @keyframes shake-hit {
+            0% { transform: translateX(0); filter: brightness(1); }
+            20% { transform: translateX(-8px); filter: brightness(2) saturate(3); }
+            40% { transform: translateX(8px); filter: brightness(1.5); }
+            60% { transform: translateX(-5px); filter: brightness(1); }
+            80% { transform: translateX(3px); }
+            100% { transform: translateX(0); filter: brightness(1); }
+        }
         .shield-badge { position: absolute; top: -5px; right: -5px; background: var(--info); color: white; border-radius: 50%; width: 22px; height: 22px; font-size: 0.65rem; display: flex; justify-content: center; align-items: center; border: 1px solid #fff; font-weight: bold;}
         .hp-bar { background: #32324a; height: 8px; border-radius: 4px; margin: 4px 0; overflow: hidden; }
         .hp-inner { background: var(--success); height: 100%; width: 100%; transition: width 0.2s; }
@@ -99,20 +181,20 @@
     <!-- 大廳畫面 -->
     <div id="lobby-screen" class="screen active">
         <div class="header">
-            <div>🏠 神裝寵物大廳</div>
-            <div class="currency">💰 金幣: <span class="global-gold">0</span></div>
+            <div><span class="emoji-lg"><i class="spr spr-castle"></i></span> 神裝寵物大廳</div>
+            <div class="currency"><span class="emoji-lg"><i class="spr spr-gold"></i></span> 金幣: <span class="global-gold">0</span></div>
         </div>
         <div class="lobby-main">
             <!-- 存檔 -->
-            <div class="save-box">
-                <span style="font-size: 0.7rem; color: #b3b3cc;">💾 存檔傳承:</span>
-                <button class="save-btn" onclick="exportSave()">📤 匯出</button>
-                <button class="save-btn" onclick="document.getElementById('import-file').click()">📥 匯入</button>
+            <div class="save-box" style="flex-wrap: wrap;">
+                <span style="font-size: 0.7rem; color: #b3b3cc;"><span class="emoji-lg"><i class="spr spr-save"></i></span> 存檔傳承:</span>
+                <button class="save-btn" onclick="exportSave()"><span class="emoji-lg"><i class="spr spr-export"></i></span> 匯出</button>
+                <button class="save-btn" onclick="document.getElementById('import-file').click()"><span class="emoji-lg"><i class="spr spr-import"></i></span> 匯入</button>
                 <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importSave(event)">
             </div>
 
-            <!-- 👑 全身配備配置欄 (新增寵物格) -->
-            <div class="panel-title">🥋 當前配備全身配置 (六大部位 + 🐾戰鬥神寵)</div>
+            <!-- 全身配備配置欄 (新增寵物格) -->
+            <div class="panel-title"><span class="emoji-lg"><i class="spr spr-armorset"></i></span> 當前配備全身配置 (六大部位 + <span class="emoji-lg"><i class="spr spr-paw"></i></span>戰鬥神寵)</div>
             <div class="equip-slots">
                 <div class="slot-card" id="eq-weapon"></div>
                 <div class="slot-card" id="eq-armor"></div>
@@ -124,24 +206,24 @@
             </div>
 
             <!-- 背包 -->
-            <div class="panel-title">🎒 戰利品倉庫 (點擊進行 鑑定/裝備/出售)</div>
+            <div class="panel-title"><span class="emoji-lg"><i class="spr spr-backpack"></i></span> 戰利品倉庫 (點擊進行 鑑定/裝備/出售)</div>
             <div class="inventory-grid" id="inventory-box"></div>
 
-            <div class="panel-title">🔮 永久覺醒元素魔法</div>
+            <div class="panel-title"><span class="emoji-lg"><i class="spr spr-crystalball"></i></span> 永久覺醒元素魔法</div>
             <div class="lobby-skills-display">
-                <div class="lobby-skill-dot" id="lb-sk-1">⚡ 雷擊<br><span id="lb-lvl-1">未解鎖</span></div>
-                <div class="lobby-skill-dot" id="lb-sk-2">🩸 吸血<br><span id="lb-lvl-2">未解鎖</span></div>
-                <div class="lobby-skill-dot" id="lb-sk-3">🔥 火球<br><span id="lb-lvl-3">未解鎖</span></div>
-                <div class="lobby-skill-dot" id="lb-sk-4">❄️ 冰凍<br><span id="lb-lvl-4">未解鎖</span></div>
+                <div class="lobby-skill-dot" id="lb-sk-1"><span class="emoji-lg"><i class="spr spr-lightning"></i></span> 雷擊<br><span id="lb-lvl-1">未解鎖</span></div>
+                <div class="lobby-skill-dot" id="lb-sk-2"><span class="emoji-lg"><i class="spr spr-blood"></i></span> 吸血<br><span id="lb-lvl-2">未解鎖</span></div>
+                <div class="lobby-skill-dot" id="lb-sk-3"><span class="emoji-lg"><i class="spr spr-flame"></i></span> 火球<br><span id="lb-lvl-3">未解鎖</span></div>
+                <div class="lobby-skill-dot" id="lb-sk-4"><span class="emoji-lg"><i class="spr spr-snowflake"></i></span> 冰凍<br><span id="lb-lvl-4">未解鎖</span></div>
             </div>
 
-            <div class="panel-title">⚡ 永久基礎特技修煉</div>
-            <div class="slot-card" style="display:flex; justify-content: space-around; text-align:center; padding: 4px; min-height: auto;">
-                <div>🎯 暴擊率: <strong style="color:var(--primary)" id="lb-crit">15%</strong></div>
-                <div>⚡ 連擊率: <strong style="color:var(--info)" id="lb-double">15%</strong></div>
+            <div class="panel-title"><span class="emoji-lg"><i class="spr spr-lightning"></i></span> 永久基礎特技修煉</div>
+            <div class="slot-card" style="display:flex; flex-wrap:wrap; justify-content: space-around; text-align:center; padding: 4px; min-height: auto;">
+                <div><span class="emoji-lg"><i class="spr spr-crit"></i></span> 暴擊率: <strong style="color:var(--primary)" id="lb-crit">15%</strong></div>
+                <div><span class="emoji-lg"><i class="spr spr-lightning"></i></span> 連擊率: <strong style="color:var(--info)" id="lb-double">15%</strong></div>
             </div>
 
-            <button class="full-btn btn-red" style="font-size: 1.05rem; padding: 10px; margin-top:8px;" onclick="startRun()">🎲 攜帶神裝與神寵 踏入荒野</button>
+            <button class="full-btn btn-red" style="font-size: 1.05rem; padding: 10px; margin-top:8px;" onclick="startRun()"><span class="emoji-lg"><i class="spr spr-dice"></i></span> 攜帶神裝與神寵 踏入荒野</button>
         </div>
     </div>
 
@@ -149,33 +231,33 @@
     <div id="adventure-screen" class="screen">
         <div class="header">
             <div>🗺️ 地圖格: <span id="board-index">1</span>/10</div>
-            <div class="currency">💰 本局獲得: <span id="run-gold">0</span></div>
+            <div class="currency"><i class="spr spr-gold"></i> 本局獲得: <span id="run-gold">0</span></div>
         </div>
         <div class="board-view" id="board-map"></div>
         <div class="adventure-stage">
             <h4 id="event-title" style="color:var(--gold); margin-bottom: 4px;">等待擲骰...</h4>
             
             <div class="passive-panel">
-                <span>⚡ 連擊率: <span id="pas-double">15</span>%</span>
-                <span>🎯 暴擊率: <span id="pas-crit">15</span>%</span>
+                <span><i class="spr spr-lightning"></i> 連擊率: <span id="pas-double">15</span>%</span>
+                <span><i class="spr spr-crit"></i> 暴擊率: <span id="pas-crit">15</span>%</span>
             </div>
 
             <div class="battle-pair">
                 <!-- 玩家 -->
                 <div class="entity">
-                    <div class="avatar">🤠<div class="shield-badge" id="hero-shield" style="display:none;">0</div></div>
+                    <div class="avatar" id="hero-avatar"><i class="spr spr-knight"></i><div class="shield-badge" id="hero-shield" style="display:none;">0</div></div>
                     <div id="hero-status" class="status-effect" style="color:var(--success)">玩家</div>
                     <div class="hp-bar"><div id="hero-hp-bar" class="hp-inner"></div></div>
                     <div id="hero-hp-txt" style="font-size:0.75rem">0/0</div>
                 </div>
-                <!-- 🐾 寵物欄位 -->
+                <!-- 寵物欄位 -->
                 <div class="entity" id="run-pet-node" style="width: 20%; opacity:0.3;">
-                    <div class="avatar" id="run-pet-avatar" style="font-size: 2rem;">💤</div>
+                    <div class="avatar" id="run-pet-avatar" style="font-size: 2rem;"><i class="spr spr-sleep"></i></div>
                     <div style="font-size:0.65rem; color:var(--purple); font-weight:bold;" id="run-pet-name">無寵物</div>
                 </div>
                 <!-- 怪物 -->
                 <div class="entity" id="enemy-node" style="opacity:0.2;">
-                    <div class="avatar" id="enemy-avatar">❓</div>
+                    <div class="avatar" id="enemy-avatar"><i class="spr spr-question"></i></div>
                     <div id="enemy-status" class="status-effect" style="color:var(--orange)"></div>
                     <div class="hp-bar"><div id="enemy-hp-bar" class="hp-inner"></div></div>
                     <div id="enemy-hp-txt" style="font-size:0.75rem">0/0</div>
@@ -184,27 +266,27 @@
 
             <div class="skills-grid">
                 <div class="skill-slot" id="sk-1" onclick="castSkill(1)">
-                    <div>⚡</div><strong>雷擊</strong><br><span id="sk-lvl-1">未解鎖</span>
+                    <div><i class="spr spr-lightning"></i></div><strong>雷擊</strong><br><span id="sk-lvl-1">未解鎖</span>
                     <div class="cd-num" id="cd-1" style="display:none;">0</div>
                 </div>
                 <div class="skill-slot" id="sk-2" onclick="castSkill(2)">
-                    <div>🩸</div><strong>吸血</strong><br><span id="sk-lvl-2">未解鎖</span>
+                    <div><i class="spr spr-blood"></i></div><strong>吸血</strong><br><span id="sk-lvl-2">未解鎖</span>
                     <div class="cd-num" id="cd-2" style="display:none;">0</div>
                 </div>
                 <div class="skill-slot" id="sk-3" onclick="castSkill(3)">
-                    <div>🔥</div><strong>火球</strong><br><span id="sk-lvl-3">未解鎖</span>
+                    <div><i class="spr spr-flame"></i></div><strong>火球</strong><br><span id="sk-lvl-3">未解鎖</span>
                     <div class="cd-num" id="cd-3" style="display:none;">0</div>
                 </div>
                 <div class="skill-slot" id="sk-4" onclick="castSkill(4)">
-                    <div>❄️</div><strong>冰凍</strong><br><span id="sk-lvl-4">未解鎖</span>
+                    <div><i class="spr spr-snowflake"></i></div><strong>冰凍</strong><br><span id="sk-lvl-4">未解鎖</span>
                     <div class="cd-num" id="cd-4" style="display:none;">0</div>
                 </div>
             </div>
         </div>
         <div class="logs" id="log-container"></div>
         <div class="footer-actions">
-            <button class="btn-blue full-btn" id="dice-btn" onclick="rollDice()">🎲 擲骰子前進</button>
-            <button class="btn-red" id="atk-btn" onclick="heroAttack()" disabled>⚔️ 普通攻擊</button>
+            <button class="btn-blue full-btn" id="dice-btn" onclick="rollDice()"><i class="spr spr-dice"></i> 擲骰子前進</button>
+            <button class="btn-red" id="atk-btn" onclick="heroAttack()" disabled><i class="spr spr-weapon"></i> 普通攻擊</button>
             <button class="btn-green" id="heal-btn" onclick="usePotion()">💊 藥水 (<span id="pot-count">3</span>)</button>
         </div>
     </div>
@@ -212,13 +294,31 @@
 
 <div class="overlay" id="rogue-overlay">
     <div class="choice-container">
-        <h3 style="color:var(--gold)">✨ 獲得荒野祝福</h3>
+        <h3 style="color:var(--gold)"><i class="spr spr-sparkle"></i> 獲得荒野祝福</h3>
         <p style="font-size:0.8rem; color:#aaa; margin-bottom: 10px;">請選擇一項能力永久累積</p>
         <div id="card-pool"></div>
     </div>
 </div>
 
 <script>
+    // 🖼️ Emoji -> CSS Sprite 對照表（供 ic() 轉換使用）
+    const EMOJI_TO_SPR = {
+        "🏠":"castle", "💰":"gold", "💾":"save", "📤":"export", "📥":"import", "🥋":"armorset", "⚔️":"weapon",
+        "🛡️":"shield", "🪖":"helmet", "💍":"ring", "🥾":"boots", "📿":"amulet", "🐾":"paw", "🎒":"backpack",
+        "⚡":"lightning", "🩸":"blood", "🔥":"flame", "❄️":"snowflake", "🎯":"crit", "🎲":"dice", "🤠":"knight",
+        "❓":"question", "📦":"crate", "💥":"explosion", "✨":"sparkle", "🔮":"crystalball", "🥚":"egg",
+        "🐺":"wolf", "🦁":"lion", "👿":"devil", "😈":"devil", "💤":"sleep", "😴":"sleep"
+    };
+    // 將字串中所有對照表內的 emoji 換成 CSS 截圖圖示 <i> 標籤（大小維持 1em，與原 emoji 相同）
+    function ic(str) {
+        if (str === undefined || str === null) return str;
+        let out = String(str);
+        for (const [emoji, spr] of Object.entries(EMOJI_TO_SPR)) {
+            out = out.split(emoji).join(`<i class="spr spr-${spr}"></i>`);
+        }
+        return out;
+    }
+
     // 💡 六大部位規格 + 🐾 寵物定義
     const SLOT_DEFS = {
         weapon: { icon: "⚔️", name: "武器", statName: "攻擊力", unit: "" },
@@ -372,24 +472,27 @@
             if (item) {
                 node.className = `slot-card has-item rarity-${item.rarity} ${slotKey === 'pet' ? 'is-pet' : ''}`;
                 if (slotKey === "pet") {
-                    node.innerHTML = `
+                    node.innerHTML = ic(`
+                        <span class="icon-lg">${item.sprite}</span>
                         <small style="color:#b975ff; font-size:0.6rem;">🐾 戰鬥隨行</small>
-                        <div style="font-size:0.7rem; font-weight:bold;">${item.sprite} ${item.name}</div>
+                        <div style="font-size:0.7rem; font-weight:bold;">${item.name}</div>
                         <div style="font-size:0.55rem; color:#aaa; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${item.desc}</div>
-                    `;
+                    `);
                 } else {
-                    node.innerHTML = `
-                        <small style="color:cyan; font-size:0.6rem;">${def.icon}已裝備</small>
+                    node.innerHTML = ic(`
+                        <span class="icon-lg">${def.icon}</span>
+                        <small style="color:cyan; font-size:0.6rem;">已裝備</small>
                         <div style="font-size:0.7rem; font-weight:bold; overflow:hidden; white-space:nowrap;">${RARITY_NAMES[item.rarity]}${def.name}</div>
                         <div style="font-size:0.65rem; color:var(--success)">+${item.stat}${def.unit}</div>
-                    `;
+                    `);
                 }
             } else {
                 node.className = "slot-card";
-                node.innerHTML = `
-                    <small style="color:var(--gray); font-size:0.6rem;">${def.icon}${def.name}欄</small>
+                node.innerHTML = ic(`
+                    <span class="icon-lg">${def.icon}</span>
+                    <small style="color:var(--gray); font-size:0.6rem;">${def.name}欄</small>
                     <div style="font-size:0.65rem; color:#555; margin-top:4px;">空</div>
-                `;
+                `);
             }
         });
 
@@ -403,27 +506,30 @@
                 let div = document.createElement('div');
                 div.className = `inv-item rarity-${item.rarity}`;
                 if(!item.identified) {
-                    div.innerHTML = `
-                        <div><strong>❓ 未鑑定${item.type==='pet'?'寵物蛋':'裝備'}</strong><br><span style="color:var(--gold); font-size:0.65rem;">鑑定: 💰${item.identifyCost}</span></div>
+                    div.innerHTML = ic(`
+                        <span class="icon-lg">❓</span>
+                        <div><strong>未鑑定${item.type==='pet'?'寵物蛋':'裝備'}</strong><br><span style="color:var(--gold); font-size:0.65rem;">鑑定: 💰${item.identifyCost}</span></div>
                         <div class="inv-actions">
                             <button class="inv-btn btn-id" onclick="identifyItem('${item.id}')">鑑定</button>
                             <button class="inv-btn btn-sl" onclick="sellItem('${item.id}')">💰${item.sellValue}</button>
-                        </div>`;
+                        </div>`);
                 } else {
                     if (item.type === "pet") {
-                        div.innerHTML = `
-                            <div><strong>${item.sprite} ${item.name}</strong><br><span style="color:var(--purple); font-size:0.6rem;">${item.desc}</span></div>
+                        div.innerHTML = ic(`
+                            <span class="icon-lg">${item.sprite}</span>
+                            <div><strong>${item.name}</strong><br><span style="color:var(--purple); font-size:0.6rem;">${item.desc}</span></div>
                             <div class="inv-actions">
                                 <button class="inv-btn btn-eq" onclick="equipItem('${item.id}')">出戰</button>
                                 <button class="inv-btn btn-sl" onclick="sellItem('${item.id}')">💰${item.sellValue}</button>
-                            </div>`;
+                            </div>`);
                     } else {
-                        div.innerHTML = `
-                            <div>"><strong>[${RARITY_NAMES[item.rarity]}]${def.icon}</strong><br><span style="color:var(--success); font-weight:bold;">${def.statName} +${item.stat}${def.unit}</span></div>
+                        div.innerHTML = ic(`
+                            <span class="icon-lg">${def.icon}</span>
+                            <div>"><strong>[${RARITY_NAMES[item.rarity]}]</strong><br><span style="color:var(--success); font-weight:bold;">${def.statName} +${item.stat}${def.unit}</span></div>
                             <div class="inv-actions">
                                 <button class="inv-btn btn-eq" onclick="equipItem('${item.id}')">裝備</button>
                                 <button class="inv-btn btn-sl" onclick="sellItem('${item.id}')">💰${item.sellValue}</button>
-                            </div>`;
+                            </div>`);
                     }
                 }
                 box.appendChild(div);
@@ -466,7 +572,7 @@
         run.boardLayout.push({ icon: '👑' });
 
         const mapBox = document.getElementById('board-map'); mapBox.innerHTML = '';
-        run.boardLayout.forEach(() => mapBox.innerHTML += `<div class="tile">⚔️</div>`);
+        run.boardLayout.forEach(() => mapBox.innerHTML += `<div class="tile"><i class="spr spr-weapon"></i></div>`);
 
         document.getElementById('lobby-screen').classList.remove('active');
         document.getElementById('adventure-screen').classList.add('active');
@@ -500,11 +606,11 @@
         const pNode = document.getElementById('run-pet-node');
         if (run.pet) {
             pNode.style.opacity = 1;
-            document.getElementById('run-pet-avatar').innerText = run.pet.sprite;
+            document.getElementById('run-pet-avatar').innerHTML = ic(run.pet.sprite);
             document.getElementById('run-pet-name').innerText = run.pet.name;
         } else {
             pNode.style.opacity = 0.3;
-            document.getElementById('run-pet-avatar').innerText = "💤";
+            document.getElementById('run-pet-avatar').innerHTML = `<i class="spr spr-sleep"></i>`;
             document.getElementById('run-pet-name').innerText = "無寵物";
         }
 
@@ -514,16 +620,16 @@
 
         if (run.enemy) {
             document.getElementById('enemy-node').style.opacity = 1;
-            document.getElementById('enemy-avatar').innerText = run.enemy.sprite;
+            document.getElementById('enemy-avatar').innerHTML = ic(run.enemy.sprite);
             document.getElementById('enemy-hp-bar').style.width = `${(run.enemy.hp / run.enemy.maxHp)*100}%`;
             document.getElementById('enemy-hp-txt').innerText = `${run.enemy.hp}/${run.enemy.maxHp}`;
             let eff = [];
             if(run.enemyEffects.burnTurns > 0) eff.push(`🔥燃燒`);
             if(run.enemyEffects.frozenTurns > 0) eff.push(`❄️凍結`);
-            document.getElementById('enemy-status').innerText = eff.join(' | ');
+            document.getElementById('enemy-status').innerHTML = ic(eff.join(' | '));
         } else {
             document.getElementById('enemy-node').style.opacity = 0.2;
-            document.getElementById('enemy-avatar').innerText = "❓";
+            document.getElementById('enemy-avatar').innerHTML = `<i class="spr spr-question"></i>`;
             document.getElementById('enemy-status').innerText = "";
         }
 
@@ -546,7 +652,7 @@
         let template = isBoss ? monsters[2] : monsters[Math.floor(Math.random()*2)];
         run.enemy = { ...template, maxHp: template.hp };
         run.enemyEffects = { burnTurns: 0, burnDmg: 0, frozenTurns: 0 };
-        document.getElementById('event-title').innerText = `${isBoss?'👑':'⚔️'} 遭遇：${run.enemy.name}`;
+        document.getElementById('event-title').innerHTML = ic(`${isBoss?'👑':'⚔️'} 遭遇：${run.enemy.name}`);
         document.getElementById('dice-btn').disabled = true; document.getElementById('atk-btn').disabled = false;
         updateRunUI();
     }
@@ -558,18 +664,23 @@
         let finalDmg = isCrit ? baseDmg * 2 : baseDmg;
 
         run.enemy.hp = Math.max(0, run.enemy.hp - finalDmg);
+        playShake('hero-avatar', 'atk');
+        playShake('enemy-avatar', 'hit');
         if(isCrit) addLog("特技", `🎯 裝備共鳴！【致命暴擊】重創敵方 ${finalDmg} 點！`);
         else addLog("普攻", `⚔️ 主人普通攻擊造成 ${finalDmg} 點傷害。`);
 
         // 史萊姆特技觸發：主人普攻時機率補血
         if (run.pet && run.pet.name === "史萊姆" && Math.random() < 0.3) {
             run.hero.hp = Math.min(run.hero.maxHp, run.hero.hp + 8);
+            playShake('run-pet-avatar', 'atk');
             addLog("寵物", `🟢 史萊姆蠕動身體！為主人的普攻加油，治療了主人 8 點生命！`);
         }
 
         if(run.enemy.hp > 0 && Math.random() * 100 < run.runDouble) {
             let comboDmg = Math.floor(baseDmg * 0.8);
             run.enemy.hp = Math.max(0, run.enemy.hp - comboDmg);
+            playShake('hero-avatar', 'atk');
+            playShake('enemy-avatar', 'hit');
             addLog("特技", `⚡ 飾品激發！【雙重連擊】追加追擊 ${comboDmg} 點！`);
         }
         for (let id in lobby.skills) { if (lobby.skills[id].cd > 0) lobby.skills[id].cd--; }
@@ -587,6 +698,8 @@
         if (!run.pet || !run.enemy) return;
         if (run.pet.name === "小火龍" && Math.random() < 0.5) {
             run.enemy.hp = Math.max(0, run.enemy.hp - 15);
+            playShake('run-pet-avatar', 'atk');
+            playShake('enemy-avatar', 'hit');
             addLog("寵物", `🔥 小火龍咆哮！朝敵人噴射出野生火球，追加造成 15 點傷害！`);
         }
     }
@@ -595,6 +708,8 @@
         let sk = lobby.skills[id]; if(!run.enemy || !sk.unlocked || sk.cd > 0 || run.hero.hp <= 0) return;
         let dmg = sk.baseDmg + (sk.lvl * sk.scale);
         run.enemy.hp = Math.max(0, run.enemy.hp - dmg); sk.cd = sk.maxCd;
+        playShake('hero-avatar', 'atk');
+        playShake('enemy-avatar', 'hit');
         addLog("技能", `🔮 轟炸 【${sk.name}】 造成 ${dmg} 點傷害！`);
         if(id == 2) {
             let heal = Math.floor(dmg * 0.5); run.hero.hp = Math.min(run.hero.maxHp, run.hero.hp + heal);
@@ -613,6 +728,7 @@
     function handleEnemyTurn() {
         if(run.enemyEffects.burnTurns > 0) {
             run.enemy.hp = Math.max(0, run.enemy.hp - run.enemyEffects.burnDmg);
+            playShake('enemy-avatar', 'hit');
             addLog("燃燒", `🔥 燃燒跳血：敵人受到 ${run.enemyEffects.burnDmg} 點傷害。`);
             if(checkEnemyDeath()) return;
             run.enemyEffects.burnTurns--; 
@@ -622,22 +738,25 @@
             run.enemyEffects.frozenTurns--; updateRunUI(); return;
         }
         let enemyDmg = Math.floor(Math.random() * 4) + run.enemy.dmg;
-        
+        playShake('enemy-avatar', 'atk');
+
         // 護盾吸收傷害計算
         if (run.hero.shield > 0) {
             if (run.hero.shield >= enemyDmg) {
                 run.hero.shield -= enemyDmg;
+                playShake('hero-avatar', 'hit');
                 addLog("護盾", `🛡️ 科技護盾吸收了全部 ${enemyDmg} 點傷害！`);
                 enemyDmg = 0;
             } else {
                 enemyDmg -= run.hero.shield;
-                addLog("護盾", `🛡️ 科技護盾破碎！破壞了 ${run.hero.shield} 點傷害，剩餘 ${enemyDmg} 點打在身上。`);
+                addLog("護盾", `🛡️ 科技護盾破碎！抵銷了 ${run.hero.shield} 點傷害，剩餘 ${enemyDmg} 點打在身上。`);
                 run.hero.shield = 0;
             }
         }
 
         if (enemyDmg > 0) {
             run.hero.hp = Math.max(0, run.hero.hp - enemyDmg);
+            playShake('hero-avatar', 'hit');
             addLog("敵人", `💥 對手猛擊主人，造成 ${enemyDmg} 點肉體傷害。`);
         }
 
@@ -670,7 +789,7 @@
         let shuffled = pool.sort(() => 0.5 - Math.random()).slice(0, 3);
         shuffled.forEach(opt => {
             let card = document.createElement('div'); card.className = 'upgrade-card';
-            card.innerHTML = `<strong>${opt.name}</strong><br><small style="color:#aaa">${opt.desc}</small>`;
+            card.innerHTML = ic(`<strong>${opt.name}</strong><br><small style="color:#aaa">${opt.desc}</small>`);
             card.onclick = () => {
                 if (opt.type === "skill") { lobby.skills[opt.id].unlocked = true; lobby.skills[opt.id].lvl++; } 
                 else if (opt.type === "passive") { if (opt.id === "double") lobby.passives.doubleChance += 15; if (opt.id === "crit") lobby.passives.critChance += 15; }
@@ -698,8 +817,19 @@
         saveToLocalStorage(); initLobby();
     }
 
+    // 🎬 觸發角色/敵人/寵物的攻擊或受擊震動效果
+    function playShake(elId, type) {
+        const el = document.getElementById(elId);
+        if (!el) return;
+        const cls = type === 'atk' ? 'shake-atk' : 'shake-hit';
+        el.classList.remove('shake-atk', 'shake-hit');
+        void el.offsetWidth; // 強制 reflow，確保動畫可重新觸發
+        el.classList.add(cls);
+        setTimeout(() => el.classList.remove(cls), 400);
+    }
+
     function addLog(tag, msg) {
-        const box = document.getElementById('log-container'); box.innerHTML += `<div><strong>[${tag}]</strong> ${msg}</div>`;
+        const box = document.getElementById('log-container'); box.innerHTML += `<div><strong>[${ic(tag)}]</strong> ${ic(msg)}</div>`;
         box.scrollTop = box.scrollHeight;
     }
 
